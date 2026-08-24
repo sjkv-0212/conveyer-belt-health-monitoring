@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Intelligent Conveyor Belt Monitoring System</title>
+  <meta name="description" content="Real-time Monitoring & Predictive Maintenance Dashboard for Intelligent Conveyor Belt Systems">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="dashboard-layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-logo-mobile">
+          <i class="fa-solid fa-gear gear-spin"></i>
+        </div>
+        <button class="sidebar-toggle-btn" id="sidebarToggleBtn" aria-label="Toggle Sidebar">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+      </div>
+
+      <nav class="sidebar-nav">
+        <button class="nav-item active" data-view="dashboard" id="nav-dashboard">
+          <i class="fa-solid fa-table-columns"></i>
+          <span>DASHBOARD</span>
+        </button>
+        <button class="nav-item" data-view="realtime" id="nav-realtime">
+          <i class="fa-solid fa-wave-square"></i>
+          <span>REAL-TIME DATA</span>
+        </button>
+        <button class="nav-item" data-view="sensors" id="nav-sensors">
+          <i class="fa-solid fa-microchip"></i>
+          <span>SENSORS</span>
+        </button>
+        <button class="nav-item" data-view="alerts" id="nav-alerts">
+          <i class="fa-solid fa-bell"></i>
+          <span>ALERTS</span>
+          <span class="nav-badge" id="navAlertBadge">2</span>
+        </button>
+        <button class="nav-item" data-view="history" id="nav-history">
+          <i class="fa-solid fa-clock-rotate-left"></i>
+          <span>HISTORY</span>
+        </button>
+        <button class="nav-item" data-view="analytics" id="nav-analytics">
+          <i class="fa-solid fa-chart-line"></i>
+          <span>ANALYTICS</span>
+        </button>
+        <button class="nav-item" data-view="maintenance" id="nav-maintenance">
+          <i class="fa-solid fa-screwdriver-wrench"></i>
+          <span>MAINTENANCE</span>
+        </button>
+        <button class="nav-item" data-view="reports" id="nav-reports">
+          <i class="fa-solid fa-file-lines"></i>
+          <span>REPORTS</span>
+        </button>
+        <button class="nav-item" data-view="camera" id="nav-camera">
+          <i class="fa-solid fa-video"></i>
+          <span>CAMERA FEED</span>
+        </button>
+        <button class="nav-item" data-view="settings" id="nav-settings">
+          <i class="fa-solid fa-gear"></i>
+          <span>SETTINGS</span>
+        </button>
+      </nav>
+
+      <!-- Sidebar Bottom Gauge Widget -->
+      <div class="sidebar-bottom-widget">
+        <div class="widget-title">SYSTEM HEALTH</div>
+        <div class="gauge-container">
+          <div class="semi-gauge">
+            <svg viewBox="0 0 160 90" class="gauge-svg">
+              <path class="gauge-bg" d="M 20 80 A 60 60 0 0 1 140 80" fill="none" stroke="#1f2d47" stroke-width="14" stroke-linecap="round"/>
+              <path class="gauge-fill" id="sidebarGaugeFill" d="M 20 80 A 60 60 0 0 1 140 80" fill="none" stroke="url(#healthGradient)" stroke-width="14" stroke-dasharray="188.5" stroke-dashoffset="33.9" stroke-linecap="round"/>
+              <defs>
+                <linearGradient id="healthGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#ef4444" />
+                  <stop offset="40%" stop-color="#f59e0b" />
+                  <stop offset="70%" stop-color="#22c55e" />
+                  <stop offset="100%" stop-color="#10b981" />
+                </linearGradient>
+              </defs>
+            </svg>
+            <div class="gauge-center-text">
+              <span class="gauge-val" id="sidebarHealthVal">82%</span>
+              <span class="gauge-status-tag tag-good" id="sidebarHealthTag">GOOD</span>
+            </div>
+          </div>
+        </div>
+        <div class="gauge-subtext">No immediate action required</div>
+        <div class="health-legend-list">
+          <div class="legend-row"><span class="legend-box box-excellent"></span><span class="legend-lbl">90 – 100%</span><span class="legend-name">Excellent</span></div>
+          <div class="legend-row"><span class="legend-box box-good"></span><span class="legend-lbl">70 – 89%</span><span class="legend-name">Good</span></div>
+          <div class="legend-row"><span class="legend-box box-warning"></span><span class="legend-lbl">40 – 69%</span><span class="legend-name">Warning</span></div>
+          <div class="legend-row"><span class="legend-box box-critical"></span><span class="legend-lbl">0 – 39%</span><span class="legend-name">Critical</span></div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT AREA -->
+    <div class="main-wrapper">
+      <!-- HEADER BAR -->
+      <header class="top-header">
+        <div class="header-left">
+          <button class="mobile-menu-trigger" id="mobileMenuBtn" aria-label="Toggle menu">
+            <i class="fa-solid fa-bars"></i>
+          </button>
+          
+          <div class="system-logo-icon">
+            <div class="conveyor-icon-svg">
+              <svg viewBox="0 0 54 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- Top Gear -->
+                <circle cx="27" cy="7" r="5" stroke="#38bdf8" stroke-width="1.8" fill="#0f1f38"/>
+                <circle cx="27" cy="7" r="2" fill="#38bdf8"/>
+                <!-- Belt Outline -->
+                <rect x="3" y="16" width="48" height="15" rx="7.5" stroke="#38bdf8" stroke-width="2" fill="#0b172a"/>
+                <!-- Rollers -->
+                <circle cx="11" cy="23.5" r="3.5" stroke="#38bdf8" stroke-width="1.5" fill="#38bdf8"/>
+                <circle cx="27" cy="23.5" r="3.5" stroke="#38bdf8" stroke-width="1.5" fill="#38bdf8"/>
+                <circle cx="43" cy="23.5" r="3.5" stroke="#38bdf8" stroke-width="1.5" fill="#38bdf8"/>
+                <circle cx="11" cy="23.5" r="1" fill="#0b172a"/>
+                <circle cx="27" cy="23.5" r="1" fill="#0b172a"/>
+                <circle cx="43" cy="23.5" r="1" fill="#0b172a"/>
+              </svg>
+            </div>
+          </div>
+
+          <div class="header-title-box">
+            <h1 class="main-title">INTELLIGENT CONVEYOR BELT MONITORING SYSTEM</h1>
+            <p class="sub-title">Real-time Monitoring & Predictive Maintenance Dashboard</p>
+          </div>
+        </div>
+
+        <div class="header-right">
+          <!-- System Status Pill -->
+          <div class="header-pill status-pill" id="systemStatusPill">
+            <span class="pulsing-dot green-dot"></span>
+            <div class="pill-text-group">
+              <span class="pill-bold">SYSTEM ONLINE</span>
+              <span class="pill-sub">All Systems Normal</span>
+            </div>
+          </div>
+
+          <!-- Date/Time Pill -->
+          <div class="header-pill date-pill">
+            <i class="fa-regular fa-calendar-days pill-icon"></i>
+            <div class="pill-text-group">
+              <span class="pill-bold" id="currentDateStr">24 May 2025</span>
+              <span class="pill-sub mono" id="currentTimeStr">10:24:35 AM</span>
+            </div>
+          </div>
+
+          <!-- Admin Profile Pill -->
+          <div class="header-pill profile-pill" id="profilePill">
+            <div class="user-avatar">
+              <i class="fa-solid fa-user"></i>
+            </div>
+            <span class="user-name">Admin</span>
+            <i class="fa-solid fa-chevron-down caret-icon"></i>
+          </div>
+
+          <!-- Simulation Live Toggle Button -->
+          <button class="live-sim-btn active" id="simToggleBtn" title="Toggle Live Sensor Stream Simulation">
+            <span class="sim-pulse"></span>
+            <span class="sim-label">LIVE STREAM</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- DASHBOARD CONTENT WRAPPER -->
+      <main class="dashboard-body" id="mainDashboardView">
+
+        <!-- TOP METRICS GRID (12 Cards) -->
+        <section class="metrics-grid">
+          <!-- Card 1: Belt Speed -->
+          <div class="metric-card" id="card-speed">
+            <div class="card-left-icon icon-cyan">
+              <i class="fa-solid fa-gauge-high"></i>
+            </div>
+            <div class="card-content">
+              <span class="card-label">BELT SPEED</span>
+              <div class="card-val-row">
+                <span class="card-val text-blue" id="val-speed">1.28</span>
+                <span class="card-unit">m/s</span>
+              </div>
+              <span class="card-meta">Set Point: 1.30 m/s</span>
+            </div>
+          </div>
+
+          <!-- Card 2: Load -->
+          <div class="metric-card" id="card-load">
+            <div class="card-left-icon icon-green">
+              <span class="weight-badge-icon">S</span>
+            </div>
+            <div class="card-content">
+              <span class="card-label">LOAD</span>
+              <div class="card-val-row">
+                <span class="card-val text-green" id="val-load">4.35</span>
+                <span class="card-unit">kg</span>
+              </div>
+              <span class="card-meta">Capacity: 10 kg</span>
+            </div>
+          </div>
+
+          <!-- Card 3: Temperature -->
+          <div class="metric-card" id="card-temp">
+            <div class="card-left-icon icon-orange">
+              <i class="fa-solid fa-temperature-half"></i>
+            </div>
+            <div class="card-content">
+              <span class="card-label">TEMPERATURE</span>
+              <div class="card-val-row">
+                <span class="card-val text-orange" id="val-temp">38.6</span>
+                <span class="card-unit">°C</span>
+              </div>
+              <span class="card-meta">Normal: &lt; 60 °C</span>
+            </div>
+          </div>
+
+          <!-- Card 4: Vibration (RMS) -->
+          <div class="metric-card" id="card-vibration">
+            <div class="card-left-icon icon-blue">
+              <i class="fa-solid fa-heart-pulse"></i>
+            </div>
+            <div class="card-content">
+              <span class="card-label">VIBRATION (RMS)</span>
+              <div class="card-val-row">
+                <span class="card-val text-cyan" id="val-vibration">2.45</span>
+                <span class="card-unit">mm/s</span>
+              </div>
+              <span class="card-meta">Normal: &lt; 4.5 mm/s</span>
+            </div>
+          </div>
+
+          <!-- Card 5: Alignment Deviation -->
+          <div class="metric-card" id="card-alignment">
+            <div class="card-left-icon icon-yellow">
+              <i class="fa-solid fa-arrows-to-dot"></i>
+            </div>
+            <div class="card-content">
+              <span class="card-label">ALIGNMENT DEVIATION</span>
+              <div class="card-val-row">
+                <span class="card-val text-yellow" id="val-alignment">2.1</span>
+                <span class="card-unit">mm</span>
+              </div>
+              <span class="card-meta">Normal: &lt; 3 mm</span>
+            </div>
+          </div>
+
+          <!-- Card 6: Belt Tension -->
+          <div class="metric-card" id="card-tension">
+            <div class="card-left-icon icon-green">
+              <i class="fa-solid fa-link"></i>
+            </div>
+            <div class="card-content">
+              <span class="card-label">BELT TENSION</span>
+              <div class="card-val-row">
+                <span class="card-val text-green" id="val-tension">6.2</span>
+                <span class="card-unit">kg</span>
+              </div>
+              <span class="card-meta">Normal: 4 – 10 kg</span>
+            </div>
+          </div>
+
+          <!-- Card 7: Motor Current -->
+          <div class="metric-card" id="card-current">
+            <div class="card-left-icon icon-green">
+              <i class="fa-solid fa-fan"></i>
+            </div>
+            <div class="card-content">
+              <span class="card-label">MOTOR CURRENT</span>
+              <div class="card-val-row">
+                <span class="card-val text-green" id="val-current">1.35</span>
+                <span class="card-unit">A</span>
+              </div>
+              <span class="card-meta">Normal: &lt; 2.5 A</span>
+            </div>
+          </div>
+
+          <!-- Card 8: Power Consumption -->
+          <div class="metric-card" id="card-power">
+            <div class="card-left-icon icon-blue">
+              <i class="fa-solid fa-bolt"></i>
+            </div>
+            <div class="card-content">
+              <span class="card-label">POWER CONSUMPTION</span>
+              <div class="card-val-row">
+                <span class="card-val text-blue" id="val-power">24.8</span>
+                <span class="card-unit">W</span>
+              </div>
+              <span class="card-meta">Voltage: 12 V DC</span>
+            </div>
+          </div>
+
+          <!-- Card 9: Health Score (AI/ML) -->
+          <div class="metric-card card-health-score" id="card-health">
+            <div class="card-content centered-health">
+              <span class="card-label">HEALTH SCORE (AI/ML)</span>
+              <div class="mini-gauge-wrap">
+                <svg viewBox="0 0 100 55" class="mini-gauge-svg">
+                  <path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="#1c2a44" stroke-width="9" stroke-linecap="round"/>
+                  <path id="cardGaugeFill" d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="#22c55e" stroke-width="9" stroke-dasharray="125.6" stroke-dashoffset="22.6" stroke-linecap="round"/>
+                </svg>
+                <div class="mini-gauge-center">
+                  <span class="mini-score" id="val-healthScore">82%</span>
+                  <span class="mini-tag">GOOD</span>
+                </div>
+              </div>
+              <div class="mini-gauge-range">
+                <span>0%</span>
+                <span>100%</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 10: Status -->
+          <div class="metric-card" id="card-status">
+            <div class="card-left-icon icon-green">
+              <i class="fa-solid fa-shield-halved"></i>
+            </div>
+            <div class="card-content">
+              <span class="card-label">STATUS</span>
+              <div class="card-val-row">
+                <span class="card-val text-green" style="font-size: 1.25rem; letter-spacing: 0.5px;">NORMAL</span>
+              </div>
+              <span class="card-meta">All Systems Operational</span>
+            </div>
+          </div>
+
+          <!-- Card 11: Uptime -->
+          <div class="metric-card" id="card-uptime">
+            <div class="card-left-icon icon-blue">
+              <i class="fa-solid fa-clock"></i>
+            </div>
+            <div class="card-content">
+              <span class="card-label">UPTIME</span>
+              <div class="card-val-row">
+                <span class="card-val text-blue" id="val-uptime" style="font-size: 1.3rem;">12h 45m</span>
+              </div>
+              <span class="card-meta">Running Smoothly</span>
+            </div>
+          </div>
+
+          <!-- Card 12: Last Updated -->
+          <div class="metric-card" id="card-updated">
+            <div class="card-left-icon icon-cyan">
+              <i class="fa-solid fa-arrows-rotate"></i>
+            </div>
+            <div class="card-content">
+              <span class="card-label">LAST UPDATED</span>
+              <div class="card-val-row">
+                <span class="card-val text-cyan mono" id="val-lastUpdated" style="font-size: 1.15rem;">10:24:35 AM</span>
+              </div>
+              <span class="card-meta" id="val-lastUpdatedDate">24 May 2025</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- MIDDLE SECTION (Sensor Trends, Health Indicator, Alerts) -->
+        <section class="middle-grid">
+          <!-- Real-time Sensor Trends -->
+          <div class="dashboard-panel chart-panel">
+            <div class="panel-header">
+              <h2 class="panel-title">REAL-TIME SENSOR TRENDS</h2>
+              <div class="panel-actions">
+                <div class="custom-select-wrapper">
+                  <select class="dark-select" id="trendRangeSelect">
+                    <option value="live">Live Data</option>
+                    <option value="15m">Last 15 Min</option>
+                    <option value="1h">Last 1 Hour</option>
+                    <option value="24h">Last 24 Hours</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Custom Legend Bar -->
+            <div class="chart-legend-bar">
+              <div class="legend-pill" data-dataset="0"><span class="legend-line line-speed"></span> Speed (m/s)</div>
+              <div class="legend-pill" data-dataset="1"><span class="legend-line line-load"></span> Load (kg)</div>
+              <div class="legend-pill" data-dataset="2"><span class="legend-line line-temp"></span> Temp (°C)</div>
+              <div class="legend-pill" data-dataset="3"><span class="legend-line line-vibration"></span> Vibration (mm/s)</div>
+              <div class="legend-pill" data-dataset="4"><span class="legend-line line-tension"></span> Tension (kg)</div>
+            </div>
+
+            <div class="chart-wrapper">
+              <canvas id="sensorTrendsChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Belt Health Indicator -->
+          <div class="dashboard-panel health-indicator-panel">
+            <div class="panel-header">
+              <h2 class="panel-title">BELT HEALTH INDICATOR</h2>
+            </div>
+            
+            <div class="health-bar-container">
+              <div class="indicator-arrow-wrapper" id="indicatorArrowWrapper" style="left: 82%;">
+                <div class="indicator-arrow"></div>
+              </div>
+              
+              <div class="segmented-bar">
+                <div class="segment seg-excellent"></div>
+                <div class="segment seg-good"></div>
+                <div class="segment seg-warning"></div>
+                <div class="segment seg-critical"></div>
+              </div>
+
+              <div class="segment-labels-grid">
+                <div class="seg-col">
+                  <span class="seg-name text-excellent">EXCELLENT</span>
+                  <span class="seg-range">90 – 100%</span>
+                </div>
+                <div class="seg-col">
+                  <span class="seg-name text-good">GOOD</span>
+                  <span class="seg-range">70 – 89%</span>
+                </div>
+                <div class="seg-col">
+                  <span class="seg-name text-warning">WARNING</span>
+                  <span class="seg-range">40 – 69%</span>
+                </div>
+                <div class="seg-col">
+                  <span class="seg-name text-critical">CRITICAL</span>
+                  <span class="seg-range">0 – 39%</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="ai-prediction-box">
+              <div class="ai-pred-title">AI Prediction</div>
+              <div class="ai-pred-content" id="aiPredictionText">
+                Belt condition is <strong class="text-good">GOOD</strong>. Continue regular monitoring.
+              </div>
+            </div>
+          </div>
+
+          <!-- Alerts & Notifications -->
+          <div class="dashboard-panel alerts-panel">
+            <div class="panel-header">
+              <h2 class="panel-title">ALERTS & NOTIFICATIONS</h2>
+              <button class="view-all-link" id="btnViewAllAlerts">View All</button>
+            </div>
+
+            <div class="alerts-list" id="alertsListContainer">
+              <!-- Alert 1 -->
+              <div class="alert-row normal">
+                <div class="alert-icon-col">
+                  <i class="fa-solid fa-circle-check icon-green"></i>
+                </div>
+                <div class="alert-body">
+                  <div class="alert-headline">System Status</div>
+                  <div class="alert-desc">All systems are running normally.</div>
+                </div>
+                <div class="alert-time">10:24:10 AM</div>
+              </div>
+
+              <!-- Alert 2 -->
+              <div class="alert-row warning">
+                <div class="alert-icon-col">
+                  <i class="fa-solid fa-triangle-exclamation icon-yellow"></i>
+                </div>
+                <div class="alert-body">
+                  <div class="alert-headline">Alignment Deviation</div>
+                  <div class="alert-desc">Deviation is high (<span id="alertDevVal">2.1 mm</span>).</div>
+                </div>
+                <div class="alert-time">10:23:15 AM</div>
+              </div>
+
+              <!-- Alert 3 -->
+              <div class="alert-row warning">
+                <div class="alert-icon-col">
+                  <i class="fa-solid fa-triangle-exclamation icon-yellow"></i>
+                </div>
+                <div class="alert-body">
+                  <div class="alert-headline">Temperature</div>
+                  <div class="alert-desc">Temperature is approaching warning limit.</div>
+                </div>
+                <div class="alert-time">10:22:45 AM</div>
+              </div>
+
+              <!-- Alert 4 -->
+              <div class="alert-row normal">
+                <div class="alert-icon-col">
+                  <i class="fa-solid fa-circle-check icon-green"></i>
+                </div>
+                <div class="alert-body">
+                  <div class="alert-headline">Vibration</div>
+                  <div class="alert-desc">Vibration levels are normal.</div>
+                </div>
+                <div class="alert-time">10:22:10 AM</div>
+              </div>
+
+              <!-- Alert 5 -->
+              <div class="alert-row info">
+                <div class="alert-icon-col">
+                  <i class="fa-solid fa-circle-info icon-blue"></i>
+                </div>
+                <div class="alert-body">
+                  <div class="alert-headline">Maintenance</div>
+                  <div class="alert-desc">Next maintenance in 5 days</div>
+                </div>
+                <div class="alert-time">10:21:00 AM</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- BOTTOM SECTION (Camera Feed, Sensor Status, Maintenance Prediction, Quick Actions) -->
+        <section class="bottom-grid">
+          <!-- Camera Feed (Belt Inspection) -->
+          <div class="dashboard-panel camera-feed-panel">
+            <div class="panel-header">
+              <h2 class="panel-title">CAMERA FEED (BELT INSPECTION)</h2>
+            </div>
+            
+            <div class="camera-body-flex">
+              <!-- Live Video/Image Frame -->
+              <div class="camera-video-wrapper">
+                <div class="live-badge"><span class="badge-dot"></span> LIVE</div>
+                <div class="camera-stream-container">
+                  <img src="assets/conveyor.jpg" alt="Conveyor Belt Live View" class="conveyor-img" id="conveyorCameraImg">
+                  <canvas id="cameraOverlayCanvas" class="camera-overlay"></canvas>
+                </div>
+                <div class="camera-timestamp-bar" id="cameraTimestamp">24 May 2025 10:24:35 AM</div>
+              </div>
+
+              <!-- Detected Issues Panel -->
+              <div class="detected-issues-sidebar">
+                <div class="issues-title">Detected Issues</div>
+                
+                <div class="issue-item">
+                  <i class="fa-solid fa-circle-check check-ok"></i>
+                  <div class="issue-info">
+                    <span class="issue-name">Belt Surface</span>
+                    <span class="issue-status">No issues detected</span>
+                  </div>
+                </div>
+
+                <div class="issue-item">
+                  <i class="fa-solid fa-circle-check check-ok"></i>
+                  <div class="issue-info">
+                    <span class="issue-name">Belt Joint</span>
+                    <span class="issue-status">No issues detected</span>
+                  </div>
+                </div>
+
+                <div class="issue-item">
+                  <i class="fa-solid fa-circle-check check-ok"></i>
+                  <div class="issue-info">
+                    <span class="issue-name">Edge Condition</span>
+                    <span class="issue-status">Normal</span>
+                  </div>
+                </div>
+
+                <div class="issue-item">
+                  <i class="fa-solid fa-circle-check check-ok"></i>
+                  <div class="issue-info">
+                    <span class="issue-name">Spillage</span>
+                    <span class="issue-status">No spillage detected</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sensor Status Table -->
+          <div class="dashboard-panel sensor-status-panel">
+            <div class="panel-header">
+              <h2 class="panel-title">SENSOR STATUS</h2>
+            </div>
+
+            <div class="sensor-table-container">
+              <table class="sensor-table">
+                <thead>
+                  <tr>
+                    <th>Sensor</th>
+                    <th>Status</th>
+                    <th>Value</th>
+                    <th>Range</th>
+                  </tr>
+                </thead>
+                <tbody id="sensorTableBody">
+                  <tr>
+                    <td class="sensor-name">Vibration (MPU6050)</td>
+                    <td><span class="status-dot green"></span></td>
+                    <td class="sensor-val mono" id="tbl-vibration">2.45 mm/s</td>
+                    <td class="sensor-range">0 – 20 mm/s</td>
+                  </tr>
+                  <tr>
+                    <td class="sensor-name">Temperature (DS18B20)</td>
+                    <td><span class="status-dot green"></span></td>
+                    <td class="sensor-val mono" id="tbl-temp">38.6 °C</td>
+                    <td class="sensor-range">-55 – 125 °C</td>
+                  </tr>
+                  <tr>
+                    <td class="sensor-name">Load Cell (HX711)</td>
+                    <td><span class="status-dot green"></span></td>
+                    <td class="sensor-val mono" id="tbl-load">4.35 kg</td>
+                    <td class="sensor-range">0 – 10 kg</td>
+                  </tr>
+                  <tr>
+                    <td class="sensor-name">Speed (IR/Encoder)</td>
+                    <td><span class="status-dot green"></span></td>
+                    <td class="sensor-val mono" id="tbl-speed">1.28 m/s</td>
+                    <td class="sensor-range">0 – 5 m/s</td>
+                  </tr>
+                  <tr>
+                    <td class="sensor-name">Alignment (IR)</td>
+                    <td><span class="status-dot green"></span></td>
+                    <td class="sensor-val mono" id="tbl-alignment">2.1 mm</td>
+                    <td class="sensor-range">0 – 5 mm</td>
+                  </tr>
+                  <tr>
+                    <td class="sensor-name">Tension (Load Cell)</td>
+                    <td><span class="status-dot green"></span></td>
+                    <td class="sensor-val mono" id="tbl-tension">6.2 kg</td>
+                    <td class="sensor-range">0 – 10 kg</td>
+                  </tr>
+                  <tr>
+                    <td class="sensor-name">Current (INA219)</td>
+                    <td><span class="status-dot green"></span></td>
+                    <td class="sensor-val mono" id="tbl-current">1.35 A</td>
+                    <td class="sensor-range">0 – 5 A</td>
+                  </tr>
+                  <tr>
+                    <td class="sensor-name">Microphone (MAX9814)</td>
+                    <td><span class="status-dot green"></span></td>
+                    <td class="sensor-val mono">Normal</td>
+                    <td class="sensor-range">20 Hz – 20 kHz</td>
+                  </tr>
+                  <tr>
+                    <td class="sensor-name">Thermal (MLX90614)</td>
+                    <td><span class="status-dot green"></span></td>
+                    <td class="sensor-val mono" id="tbl-thermal">38.6 °C</td>
+                    <td class="sensor-range">-70 – 380 °C</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Maintenance Prediction -->
+          <div class="dashboard-panel maintenance-panel">
+            <div class="panel-header">
+              <h2 class="panel-title">MAINTENANCE PREDICTION</h2>
+            </div>
+
+            <div class="maintenance-body">
+              <div class="maint-top-row">
+                <div class="maint-icon-bubble">
+                  <i class="fa-solid fa-wrench"></i>
+                </div>
+                <div class="maint-life-info">
+                  <span class="maint-sub">Predicted Remaining Life</span>
+                  <span class="maint-days" id="maintRemainingDays">23 Days</span>
+                </div>
+              </div>
+
+              <div class="maint-cond-row">
+                <span>Condition: <strong class="text-good" id="maintConditionTag">Good</strong></span>
+              </div>
+
+              <div class="maint-progress-wrap">
+                <div class="maint-progress-bar">
+                  <div class="maint-progress-fill" id="maintProgressFill" style="width: 76%;"></div>
+                </div>
+                <span class="maint-progress-pct" id="maintProgressPct">76%</span>
+              </div>
+
+              <div class="maint-action-box">
+                <span class="action-label">Recommended Action</span>
+                <p class="action-desc" id="maintActionDesc">No immediate maintenance required.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Actions -->
+          <div class="dashboard-panel quick-actions-panel">
+            <div class="panel-header">
+              <h2 class="panel-title">QUICK ACTIONS</h2>
+            </div>
+
+            <div class="actions-button-grid">
+              <button class="action-btn btn-blue" id="btnGenerateReport">
+                <i class="fa-regular fa-file-lines"></i>
+                <span>Generate Report</span>
+              </button>
+
+              <button class="action-btn btn-green" id="btnDownloadData">
+                <i class="fa-solid fa-download"></i>
+                <span>Download Data</span>
+              </button>
+
+              <button class="action-btn btn-purple" id="btnSystemSettings">
+                <i class="fa-solid fa-gear"></i>
+                <span>System Settings</span>
+              </button>
+
+              <button class="action-btn btn-orange" id="btnAddMaintenanceLog">
+                <i class="fa-regular fa-calendar-plus"></i>
+                <span>Add Maintenance Log</span>
+              </button>
+            </div>
+          </div>
+        </section>
+
+      </main>
+
+      <!-- MODALS / DIALOGS -->
+      <!-- Modal: Generate Report -->
+      <div class="modal-backdrop" id="modalReport">
+        <div class="modal-box">
+          <div class="modal-header">
+            <h3><i class="fa-solid fa-file-pdf"></i> Generate Inspection & Telemetry Report</h3>
+            <button class="modal-close" data-close="modalReport">&times;</button>
+          </div>
+          <div class="modal-body">
+            <p>Select report parameters to export comprehensive conveyor diagnostic data:</p>
+            <div class="form-group">
+              <label>Report Format</label>
+              <select class="dark-select full-width" id="reportFormat">
+                <option value="pdf">PDF Detailed Audit Report</option>
+                <option value="excel">Excel Detailed Sensor Logs</option>
+                <option value="json">JSON Raw Telemetry Export</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Time Range</label>
+              <select class="dark-select full-width">
+                <option>Current Shift (Last 8 Hours)</option>
+                <option>Last 24 Hours</option>
+                <option>Past 7 Days</option>
+                <option>Custom Range</option>
+              </select>
+            </div>
+            <div class="report-summary-box">
+              <div class="summary-line"><span>Conveyor Unit ID:</span><strong>CNV-LINE-04-A</strong></div>
+              <div class="summary-line"><span>Health Score:</span><strong class="text-good" id="modalHealthVal">82% (Good)</strong></div>
+              <div class="summary-line"><span>Active Anomalies:</span><strong class="text-warning">1 Minor (Alignment)</strong></div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn-cancel" data-close="modalReport">Cancel</button>
+            <button class="btn-primary" id="btnConfirmExport"><i class="fa-solid fa-download"></i> Generate & Download</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal: Maintenance Log -->
+      <div class="modal-backdrop" id="modalMaintLog">
+        <div class="modal-box">
+          <div class="modal-header">
+            <h3><i class="fa-solid fa-wrench"></i> Add Maintenance Log Entry</h3>
+            <button class="modal-close" data-close="modalMaintLog">&times;</button>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <label>Technician / Inspector</label>
+              <input type="text" class="dark-input" value="Admin / Lead Tech #42" id="logTech">
+            </div>
+            <div class="form-group">
+              <label>Activity Type</label>
+              <select class="dark-select full-width" id="logType">
+                <option>Routine Belt Inspection</option>
+                <option>Roller Lubrication & Bearing Check</option>
+                <option>Belt Tension Adjustment</option>
+                <option>Sensor Calibration (IR / Load Cell)</option>
+                <option>Emergency Realignment</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Notes & Observations</label>
+              <textarea class="dark-textarea" rows="3" placeholder="Enter findings, parts replaced, or torque checks..."></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn-cancel" data-close="modalMaintLog">Cancel</button>
+            <button class="btn-primary" id="btnSaveLog"><i class="fa-solid fa-floppy-disk"></i> Save Log</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal: System Settings -->
+      <div class="modal-backdrop" id="modalSettings">
+        <div class="modal-box">
+          <div class="modal-header">
+            <h3><i class="fa-solid fa-gear"></i> System Settings & Thresholds</h3>
+            <button class="modal-close" data-close="modalSettings">&times;</button>
+          </div>
+          <div class="modal-body">
+            <div class="form-row-2">
+              <div class="form-group">
+                <label>Belt Speed Setpoint (m/s)</label>
+                <input type="number" step="0.05" class="dark-input" value="1.30" id="cfgSpeed">
+              </div>
+              <div class="form-group">
+                <label>Max Load Capacity (kg)</label>
+                <input type="number" step="0.5" class="dark-input" value="10.0" id="cfgMaxLoad">
+              </div>
+            </div>
+            <div class="form-row-2">
+              <div class="form-group">
+                <label>Temp Warning Threshold (°C)</label>
+                <input type="number" class="dark-input" value="60" id="cfgTemp">
+              </div>
+              <div class="form-group">
+                <label>Vibration Alert Limit (mm/s)</label>
+                <input type="number" step="0.1" class="dark-input" value="4.5" id="cfgVib">
+              </div>
+            </div>
+            <div class="form-group toggle-group">
+              <label>Simulate Real-time Sensor Noise</label>
+              <input type="checkbox" id="chkNoise" checked>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn-cancel" data-close="modalSettings">Close</button>
+            <button class="btn-primary" id="btnSaveSettings">Apply Settings</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Toast Notification Notification Popup -->
+      <div class="toast-container" id="toastContainer"></div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
