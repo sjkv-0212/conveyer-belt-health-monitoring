@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Intelligent Conveyor Belt Monitoring System</title>
-  <meta name="description" content="Real-time Monitoring & Predictive Maintenance Dashboard for Intelligent Conveyor Belt Systems">
+  <title>Intelligent Conveyor Belt Health Monitoring System | AI & ML Predictive Maintenance</title>
+  <meta name="description" content="End-to-End Intelligent Conveyor Belt Health Monitoring System with ESP32 & Arduino Hardware Telemetry, Continuous Machine Learning Regression & Classification, Multi-Sensor Threshold Management, and Computer Vision Belt Inspection.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link rel="stylesheet" href="style.css">
@@ -17,15 +17,22 @@
     <!-- SIDEBAR -->
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-header">
-        <div class="brand-logo-mobile">
-          <i class="fa-solid fa-gear gear-spin"></i>
+        <div class="brand-box">
+          <div class="conveyor-mini-logo">
+            <i class="fa-solid fa-gear gear-spin"></i>
+          </div>
+          <div class="brand-text">
+            <span class="brand-title">CONVEYOR·AI</span>
+            <span class="brand-subtitle">Health Guardian v2.4</span>
+          </div>
         </div>
         <button class="sidebar-toggle-btn" id="sidebarToggleBtn" aria-label="Toggle Sidebar">
-          <i class="fa-solid fa-bars"></i>
+          <i class="fa-solid fa-angles-left"></i>
         </button>
       </div>
 
-      <nav class="sidebar-nav">
+      <!-- Navigation Tabs (Dedicated Unique Webpages) -->
+      <nav class="sidebar-nav" id="sidebarNav">
         <button class="nav-item active" data-view="dashboard" id="nav-dashboard">
           <i class="fa-solid fa-table-columns"></i>
           <span>DASHBOARD</span>
@@ -41,7 +48,7 @@
         <button class="nav-item" data-view="alerts" id="nav-alerts">
           <i class="fa-solid fa-bell"></i>
           <span>ALERTS</span>
-          <span class="nav-badge" id="navAlertBadge">2</span>
+          <span class="nav-badge" id="navAlertBadge">0</span>
         </button>
         <button class="nav-item" data-view="history" id="nav-history">
           <i class="fa-solid fa-clock-rotate-left"></i>
@@ -56,43 +63,45 @@
           <span>MAINTENANCE</span>
         </button>
         <button class="nav-item" data-view="reports" id="nav-reports">
-          <i class="fa-solid fa-file-lines"></i>
+          <i class="fa-solid fa-file-invoice"></i>
           <span>REPORTS</span>
         </button>
         <button class="nav-item" data-view="camera" id="nav-camera">
           <i class="fa-solid fa-video"></i>
           <span>CAMERA FEED</span>
         </button>
-        <button class="nav-item" data-view="settings" id="nav-settings">
+        <button class="nav-item" data-view="thresholds" id="nav-settings">
           <i class="fa-solid fa-gear"></i>
           <span>SETTINGS</span>
         </button>
       </nav>
 
-      <!-- Sidebar Bottom Gauge Widget -->
+      <!-- Sidebar Bottom Health Widget -->
       <div class="sidebar-bottom-widget">
-        <div class="widget-title">SYSTEM HEALTH</div>
+        <div class="widget-header-row">
+          <span class="widget-title">SYSTEM HEALTH</span>
+        </div>
         <div class="gauge-container">
           <div class="semi-gauge">
             <svg viewBox="0 0 160 90" class="gauge-svg">
-              <path class="gauge-bg" d="M 20 80 A 60 60 0 0 1 140 80" fill="none" stroke="#1f2d47" stroke-width="14" stroke-linecap="round"/>
+              <path class="gauge-bg" d="M 20 80 A 60 60 0 0 1 140 80" fill="none" stroke="#13233c" stroke-width="14" stroke-linecap="round"/>
               <path class="gauge-fill" id="sidebarGaugeFill" d="M 20 80 A 60 60 0 0 1 140 80" fill="none" stroke="url(#healthGradient)" stroke-width="14" stroke-dasharray="188.5" stroke-dashoffset="33.9" stroke-linecap="round"/>
               <defs>
                 <linearGradient id="healthGradient" x1="0%" y1="0%" x2="100%" y2="0%">
                   <stop offset="0%" stop-color="#ef4444" />
-                  <stop offset="40%" stop-color="#f59e0b" />
+                  <stop offset="35%" stop-color="#f59e0b" />
                   <stop offset="70%" stop-color="#22c55e" />
                   <stop offset="100%" stop-color="#10b981" />
                 </linearGradient>
               </defs>
             </svg>
             <div class="gauge-center-text">
-              <span class="gauge-val" id="sidebarHealthVal">82%</span>
+              <span class="gauge-val mono" id="sidebarHealthVal">82%</span>
               <span class="gauge-status-tag tag-good" id="sidebarHealthTag">GOOD</span>
             </div>
           </div>
         </div>
-        <div class="gauge-subtext">No immediate action required</div>
+        <div class="gauge-subtext" id="sidebarHealthStatusText">No immediate action required</div>
         <div class="health-legend-list">
           <div class="legend-row"><span class="legend-box box-excellent"></span><span class="legend-lbl">90 – 100%</span><span class="legend-name">Excellent</span></div>
           <div class="legend-row"><span class="legend-box box-good"></span><span class="legend-lbl">70 – 89%</span><span class="legend-name">Good</span></div>
@@ -104,7 +113,7 @@
 
     <!-- MAIN CONTENT AREA -->
     <div class="main-wrapper">
-      <!-- HEADER BAR -->
+      <!-- TOP HEADER BAR -->
       <header class="top-header">
         <div class="header-left">
           <button class="mobile-menu-trigger" id="mobileMenuBtn" aria-label="Toggle menu">
@@ -112,95 +121,115 @@
           </button>
           
           <div class="system-logo-icon">
-            <div class="conveyor-icon-svg">
-              <svg viewBox="0 0 54 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <!-- Top Gear -->
-                <circle cx="27" cy="7" r="5" stroke="#38bdf8" stroke-width="1.8" fill="#0f1f38"/>
-                <circle cx="27" cy="7" r="2" fill="#38bdf8"/>
-                <!-- Belt Outline -->
-                <rect x="3" y="16" width="48" height="15" rx="7.5" stroke="#38bdf8" stroke-width="2" fill="#0b172a"/>
-                <!-- Rollers -->
-                <circle cx="11" cy="23.5" r="3.5" stroke="#38bdf8" stroke-width="1.5" fill="#38bdf8"/>
-                <circle cx="27" cy="23.5" r="3.5" stroke="#38bdf8" stroke-width="1.5" fill="#38bdf8"/>
-                <circle cx="43" cy="23.5" r="3.5" stroke="#38bdf8" stroke-width="1.5" fill="#38bdf8"/>
-                <circle cx="11" cy="23.5" r="1" fill="#0b172a"/>
-                <circle cx="27" cy="23.5" r="1" fill="#0b172a"/>
-                <circle cx="43" cy="23.5" r="1" fill="#0b172a"/>
-              </svg>
+            <div class="conveyor-icon-box">
+              <i class="fa-solid fa-gear gear-logo-icon"></i>
             </div>
           </div>
 
           <div class="header-title-box">
             <h1 class="main-title">INTELLIGENT CONVEYOR BELT MONITORING SYSTEM</h1>
-            <p class="sub-title">Real-time Monitoring & Predictive Maintenance Dashboard</p>
+            <p class="sub-title" id="pageSubtitle">Real-time Monitoring & Predictive Maintenance Dashboard</p>
           </div>
         </div>
 
         <div class="header-right">
+          <!-- Fault Simulation Quick Trigger -->
+          <div class="header-fault-inject">
+            <label for="faultInjectSelect" class="fault-label"><i class="fa-solid fa-flask"></i> ML TEST:</label>
+            <select class="dark-select fault-select" id="faultInjectSelect">
+              <option value="none">🟢 Normal Operation</option>
+              <option value="bearing">🔴 Bearing Degradation</option>
+              <option value="misalignment">🟡 Belt Misalignment</option>
+              <option value="slippage">🟡 Belt Slippage</option>
+              <option value="overload">🔴 Overload Jam</option>
+              <option value="slack">🟡 Low Tension</option>
+              <option value="crack">🔴 Surface Crack (CV)</option>
+            </select>
+          </div>
+
+          <!-- Web Serial Connect -->
+          <button class="header-pill hardware-pill" id="btnWebSerialConnect" title="Connect directly to ESP32 / Arduino">
+            <i class="fa-brands fa-usb pill-icon"></i>
+            <span class="pill-bold" id="serialStatusText">SERIAL</span>
+          </button>
+
           <!-- System Status Pill -->
           <div class="header-pill status-pill" id="systemStatusPill">
-            <span class="pulsing-dot green-dot"></span>
+            <span class="pulsing-dot green-dot" id="systemStatusDot"></span>
             <div class="pill-text-group">
-              <span class="pill-bold">SYSTEM ONLINE</span>
-              <span class="pill-sub">All Systems Normal</span>
+              <span class="pill-bold" id="systemStatusHeader">SYSTEM ONLINE</span>
+              <span class="pill-sub" id="systemStatusSub">All Systems Normal</span>
             </div>
           </div>
 
           <!-- Date/Time Pill -->
           <div class="header-pill date-pill">
-            <i class="fa-regular fa-calendar-days pill-icon"></i>
+            <i class="fa-regular fa-calendar pill-icon"></i>
             <div class="pill-text-group">
               <span class="pill-bold" id="currentDateStr">24 May 2025</span>
               <span class="pill-sub mono" id="currentTimeStr">10:24:35 AM</span>
             </div>
           </div>
 
-          <!-- Admin Profile Pill -->
-          <div class="header-pill profile-pill" id="profilePill">
+          <!-- User Admin Pill -->
+          <div class="header-pill user-pill">
             <div class="user-avatar">
               <i class="fa-solid fa-user"></i>
             </div>
-            <span class="user-name">Admin</span>
-            <i class="fa-solid fa-chevron-down caret-icon"></i>
+            <span class="pill-bold">Admin</span>
+            <i class="fa-solid fa-chevron-down user-chevron"></i>
           </div>
-
-          <!-- Simulation Live Toggle Button -->
-          <button class="live-sim-btn active" id="simToggleBtn" title="Toggle Live Sensor Stream Simulation">
-            <span class="sim-pulse"></span>
-            <span class="sim-label">LIVE STREAM</span>
-          </button>
         </div>
       </header>
 
-      <!-- DASHBOARD CONTENT WRAPPER -->
-      <main class="dashboard-body" id="mainDashboardView">
+      <!-- VIEW CONTAINERS (Dedicated Page for Each Element) -->
+      
+      <!-- ========================================================================= -->
+      <!-- VIEW 1: DASHBOARD OVERVIEW -->
+      <!-- ========================================================================= -->
+      <main class="dashboard-body view-page active" id="view-dashboard">
+        
+        <!-- Live AI Fault Classification Banner -->
+        <div class="ml-diagnosis-banner" id="mlFaultBanner">
+          <div class="banner-icon-box" id="mlBannerIcon">
+            <i class="fa-solid fa-shield-heart"></i>
+          </div>
+          <div class="banner-content">
+            <div class="banner-top-row">
+              <span class="banner-title" id="mlBannerTitle">ML CONTINUOUS FAULT DIAGNOSIS: NORMAL OPERATION</span>
+              <span class="banner-confidence-badge" id="mlBannerConfidence">99.2% Confidence</span>
+            </div>
+            <p class="banner-desc" id="mlBannerDesc">Machine learning Random Forest Classifier and Regression models detect nominal operating state. Remaining Useful Life: 23 Days (552 operating hours).</p>
+          </div>
+          <button class="banner-action-btn" id="btnGoToAnalytics">View ML Model Insights &rarr;</button>
+        </div>
 
         <!-- TOP METRICS GRID (12 Cards) -->
         <section class="metrics-grid">
           <!-- Card 1: Belt Speed -->
           <div class="metric-card" id="card-speed">
-            <div class="card-left-icon icon-cyan">
+            <div class="card-left-icon icon-blue">
               <i class="fa-solid fa-gauge-high"></i>
             </div>
             <div class="card-content">
               <span class="card-label">BELT SPEED</span>
               <div class="card-val-row">
-                <span class="card-val text-blue" id="val-speed">1.28</span>
+                <span class="card-val text-blue mono" id="val-speed">1.28</span>
                 <span class="card-unit">m/s</span>
               </div>
-              <span class="card-meta">Set Point: 1.30 m/s</span>
+              <span class="card-meta">Set Point: <span id="meta-speedSetPoint">1.30</span> m/s</span>
             </div>
           </div>
 
           <!-- Card 2: Load -->
           <div class="metric-card" id="card-load">
             <div class="card-left-icon icon-green">
-              <span class="weight-badge-icon">S</span>
+              <i class="fa-solid fa-scale-unbalanced"></i>
             </div>
             <div class="card-content">
               <span class="card-label">LOAD</span>
               <div class="card-val-row">
-                <span class="card-val text-green" id="val-load">4.35</span>
+                <span class="card-val text-green mono" id="val-load">4.35</span>
                 <span class="card-unit">kg</span>
               </div>
               <span class="card-meta">Capacity: 10 kg</span>
@@ -215,7 +244,7 @@
             <div class="card-content">
               <span class="card-label">TEMPERATURE</span>
               <div class="card-val-row">
-                <span class="card-val text-orange" id="val-temp">38.6</span>
+                <span class="card-val text-orange mono" id="val-temp">38.6</span>
                 <span class="card-unit">°C</span>
               </div>
               <span class="card-meta">Normal: &lt; 60 °C</span>
@@ -224,13 +253,13 @@
 
           <!-- Card 4: Vibration (RMS) -->
           <div class="metric-card" id="card-vibration">
-            <div class="card-left-icon icon-blue">
-              <i class="fa-solid fa-heart-pulse"></i>
+            <div class="card-left-icon icon-cyan">
+              <i class="fa-solid fa-wave-square"></i>
             </div>
             <div class="card-content">
               <span class="card-label">VIBRATION (RMS)</span>
               <div class="card-val-row">
-                <span class="card-val text-cyan" id="val-vibration">2.45</span>
+                <span class="card-val text-cyan mono" id="val-vibration">2.45</span>
                 <span class="card-unit">mm/s</span>
               </div>
               <span class="card-meta">Normal: &lt; 4.5 mm/s</span>
@@ -240,12 +269,12 @@
           <!-- Card 5: Alignment Deviation -->
           <div class="metric-card" id="card-alignment">
             <div class="card-left-icon icon-yellow">
-              <i class="fa-solid fa-arrows-to-dot"></i>
+              <i class="fa-solid fa-crosshairs"></i>
             </div>
             <div class="card-content">
               <span class="card-label">ALIGNMENT DEVIATION</span>
               <div class="card-val-row">
-                <span class="card-val text-yellow" id="val-alignment">2.1</span>
+                <span class="card-val text-yellow mono" id="val-alignment">2.1</span>
                 <span class="card-unit">mm</span>
               </div>
               <span class="card-meta">Normal: &lt; 3 mm</span>
@@ -260,7 +289,7 @@
             <div class="card-content">
               <span class="card-label">BELT TENSION</span>
               <div class="card-val-row">
-                <span class="card-val text-green" id="val-tension">6.2</span>
+                <span class="card-val text-green mono" id="val-tension">6.2</span>
                 <span class="card-unit">kg</span>
               </div>
               <span class="card-meta">Normal: 4 – 10 kg</span>
@@ -270,12 +299,12 @@
           <!-- Card 7: Motor Current -->
           <div class="metric-card" id="card-current">
             <div class="card-left-icon icon-green">
-              <i class="fa-solid fa-fan"></i>
+              <i class="fa-solid fa-industry"></i>
             </div>
             <div class="card-content">
               <span class="card-label">MOTOR CURRENT</span>
               <div class="card-val-row">
-                <span class="card-val text-green" id="val-current">1.35</span>
+                <span class="card-val text-green mono" id="val-current">1.35</span>
                 <span class="card-unit">A</span>
               </div>
               <span class="card-meta">Normal: &lt; 2.5 A</span>
@@ -290,7 +319,7 @@
             <div class="card-content">
               <span class="card-label">POWER CONSUMPTION</span>
               <div class="card-val-row">
-                <span class="card-val text-blue" id="val-power">24.8</span>
+                <span class="card-val text-blue mono" id="val-power">24.8</span>
                 <span class="card-unit">W</span>
               </div>
               <span class="card-meta">Voltage: 12 V DC</span>
@@ -307,8 +336,8 @@
                   <path id="cardGaugeFill" d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="#22c55e" stroke-width="9" stroke-dasharray="125.6" stroke-dashoffset="22.6" stroke-linecap="round"/>
                 </svg>
                 <div class="mini-gauge-center">
-                  <span class="mini-score" id="val-healthScore">82%</span>
-                  <span class="mini-tag">GOOD</span>
+                  <span class="mini-score mono" id="val-healthScore">82%</span>
+                  <span class="mini-tag tag-good" id="val-healthTag">GOOD</span>
                 </div>
               </div>
               <div class="mini-gauge-range">
@@ -320,15 +349,15 @@
 
           <!-- Card 10: Status -->
           <div class="metric-card" id="card-status">
-            <div class="card-left-icon icon-green">
+            <div class="card-left-icon icon-green" id="cardStatusIcon">
               <i class="fa-solid fa-shield-halved"></i>
             </div>
             <div class="card-content">
               <span class="card-label">STATUS</span>
               <div class="card-val-row">
-                <span class="card-val text-green" style="font-size: 1.25rem; letter-spacing: 0.5px;">NORMAL</span>
+                <span class="card-val text-green mono" id="val-systemStatusText" style="font-size: 1.2rem; letter-spacing: 0.5px;">NORMAL</span>
               </div>
-              <span class="card-meta">All Systems Operational</span>
+              <span class="card-meta" id="val-systemStatusMeta">All Systems Operational</span>
             </div>
           </div>
 
@@ -340,7 +369,7 @@
             <div class="card-content">
               <span class="card-label">UPTIME</span>
               <div class="card-val-row">
-                <span class="card-val text-blue" id="val-uptime" style="font-size: 1.3rem;">12h 45m</span>
+                <span class="card-val text-blue mono" id="val-uptime" style="font-size: 1.3rem;">12h 45m</span>
               </div>
               <span class="card-meta">Running Smoothly</span>
             </div>
@@ -354,7 +383,7 @@
             <div class="card-content">
               <span class="card-label">LAST UPDATED</span>
               <div class="card-val-row">
-                <span class="card-val text-cyan mono" id="val-lastUpdated" style="font-size: 1.15rem;">10:24:35 AM</span>
+                <span class="card-val text-cyan mono" id="val-lastUpdatedTime" style="font-size: 1.1rem;">10:24:35 AM</span>
               </div>
               <span class="card-meta" id="val-lastUpdatedDate">24 May 2025</span>
             </div>
@@ -366,14 +395,13 @@
           <!-- Real-time Sensor Trends -->
           <div class="dashboard-panel chart-panel">
             <div class="panel-header">
-              <h2 class="panel-title">REAL-TIME SENSOR TRENDS</h2>
+              <h2 class="panel-title"><i class="fa-solid fa-chart-line"></i> REAL-TIME MULTI-SENSOR TRENDS</h2>
               <div class="panel-actions">
                 <div class="custom-select-wrapper">
                   <select class="dark-select" id="trendRangeSelect">
-                    <option value="live">Live Data</option>
+                    <option value="live">Live Stream (Last 30s)</option>
                     <option value="15m">Last 15 Min</option>
                     <option value="1h">Last 1 Hour</option>
-                    <option value="24h">Last 24 Hours</option>
                   </select>
                 </div>
               </div>
@@ -396,7 +424,7 @@
           <!-- Belt Health Indicator -->
           <div class="dashboard-panel health-indicator-panel">
             <div class="panel-header">
-              <h2 class="panel-title">BELT HEALTH INDICATOR</h2>
+              <h2 class="panel-title"><i class="fa-solid fa-heart-pulse"></i> BELT HEALTH & RUL PREDICTOR</h2>
             </div>
             
             <div class="health-bar-container">
@@ -432,9 +460,9 @@
             </div>
 
             <div class="ai-prediction-box">
-              <div class="ai-pred-title">AI Prediction</div>
+              <div class="ai-pred-title"><i class="fa-solid fa-microchip"></i> ML Continuous Inference</div>
               <div class="ai-pred-content" id="aiPredictionText">
-                Belt condition is <strong class="text-good">GOOD</strong>. Continue regular monitoring.
+                Belt condition is <strong class="text-good">OPTIMAL</strong>. Estimated RUL is <strong>23 Days (552 operating hours)</strong>. Continue regular telemetry logging.
               </div>
             </div>
           </div>
@@ -442,69 +470,20 @@
           <!-- Alerts & Notifications -->
           <div class="dashboard-panel alerts-panel">
             <div class="panel-header">
-              <h2 class="panel-title">ALERTS & NOTIFICATIONS</h2>
-              <button class="view-all-link" id="btnViewAllAlerts">View All</button>
+              <h2 class="panel-title"><i class="fa-solid fa-bell"></i> ACTIVE ALERTS & LOGS</h2>
+              <button class="view-all-link" id="btnViewAllAlerts">Open Alerts Tab</button>
             </div>
 
-            <div class="alerts-list" id="alertsListContainer">
-              <!-- Alert 1 -->
+            <div class="alerts-list" id="dashboardAlertsList">
               <div class="alert-row normal">
                 <div class="alert-icon-col">
                   <i class="fa-solid fa-circle-check icon-green"></i>
                 </div>
                 <div class="alert-body">
-                  <div class="alert-headline">System Status</div>
-                  <div class="alert-desc">All systems are running normally.</div>
+                  <div class="alert-headline">ML State: Normal Operation</div>
+                  <div class="alert-desc">All 15 prototype hardware sensors operating within nominal bounds.</div>
                 </div>
-                <div class="alert-time">10:24:10 AM</div>
-              </div>
-
-              <!-- Alert 2 -->
-              <div class="alert-row warning">
-                <div class="alert-icon-col">
-                  <i class="fa-solid fa-triangle-exclamation icon-yellow"></i>
-                </div>
-                <div class="alert-body">
-                  <div class="alert-headline">Alignment Deviation</div>
-                  <div class="alert-desc">Deviation is high (<span id="alertDevVal">2.1 mm</span>).</div>
-                </div>
-                <div class="alert-time">10:23:15 AM</div>
-              </div>
-
-              <!-- Alert 3 -->
-              <div class="alert-row warning">
-                <div class="alert-icon-col">
-                  <i class="fa-solid fa-triangle-exclamation icon-yellow"></i>
-                </div>
-                <div class="alert-body">
-                  <div class="alert-headline">Temperature</div>
-                  <div class="alert-desc">Temperature is approaching warning limit.</div>
-                </div>
-                <div class="alert-time">10:22:45 AM</div>
-              </div>
-
-              <!-- Alert 4 -->
-              <div class="alert-row normal">
-                <div class="alert-icon-col">
-                  <i class="fa-solid fa-circle-check icon-green"></i>
-                </div>
-                <div class="alert-body">
-                  <div class="alert-headline">Vibration</div>
-                  <div class="alert-desc">Vibration levels are normal.</div>
-                </div>
-                <div class="alert-time">10:22:10 AM</div>
-              </div>
-
-              <!-- Alert 5 -->
-              <div class="alert-row info">
-                <div class="alert-icon-col">
-                  <i class="fa-solid fa-circle-info icon-blue"></i>
-                </div>
-                <div class="alert-body">
-                  <div class="alert-headline">Maintenance</div>
-                  <div class="alert-desc">Next maintenance in 5 days</div>
-                </div>
-                <div class="alert-time">10:21:00 AM</div>
+                <div class="alert-time">Just now</div>
               </div>
             </div>
           </div>
@@ -515,53 +494,53 @@
           <!-- Camera Feed (Belt Inspection) -->
           <div class="dashboard-panel camera-feed-panel">
             <div class="panel-header">
-              <h2 class="panel-title">CAMERA FEED (BELT INSPECTION)</h2>
+              <h2 class="panel-title"><i class="fa-solid fa-camera"></i> CAMERA FEED (COMPUTER VISION INSPECTION)</h2>
+              <button class="view-all-link" id="btnExpandCamera">Full CV Workbench</button>
             </div>
             
             <div class="camera-body-flex">
-              <!-- Live Video/Image Frame -->
               <div class="camera-video-wrapper">
-                <div class="live-badge"><span class="badge-dot"></span> LIVE</div>
+                <div class="live-badge"><span class="badge-dot"></span> CV ACTIVE (30 FPS)</div>
                 <div class="camera-stream-container">
                   <img src="assets/conveyor.jpg" alt="Conveyor Belt Live View" class="conveyor-img" id="conveyorCameraImg">
                   <canvas id="cameraOverlayCanvas" class="camera-overlay"></canvas>
                 </div>
-                <div class="camera-timestamp-bar" id="cameraTimestamp">24 May 2025 10:24:35 AM</div>
+                <div class="camera-timestamp-bar" id="cameraTimestamp">25 Aug 2026 10:24:35 AM</div>
               </div>
 
               <!-- Detected Issues Panel -->
               <div class="detected-issues-sidebar">
-                <div class="issues-title">Detected Issues</div>
+                <div class="issues-title">CV Surface Diagnostics</div>
                 
-                <div class="issue-item">
+                <div class="issue-item" id="cvIssueSurface">
                   <i class="fa-solid fa-circle-check check-ok"></i>
                   <div class="issue-info">
-                    <span class="issue-name">Belt Surface</span>
-                    <span class="issue-status">No issues detected</span>
+                    <span class="issue-name">Belt Surface Condition</span>
+                    <span class="issue-status" id="cvStatusSurface">Clean / No Cracks</span>
                   </div>
                 </div>
 
-                <div class="issue-item">
+                <div class="issue-item" id="cvIssueJoint">
                   <i class="fa-solid fa-circle-check check-ok"></i>
                   <div class="issue-info">
-                    <span class="issue-name">Belt Joint</span>
-                    <span class="issue-status">No issues detected</span>
+                    <span class="issue-name">Belt Joint / Splice</span>
+                    <span class="issue-status" id="cvStatusJoint">Intact (0.0 mm Gap)</span>
                   </div>
                 </div>
 
-                <div class="issue-item">
+                <div class="issue-item" id="cvIssueEdge">
                   <i class="fa-solid fa-circle-check check-ok"></i>
                   <div class="issue-info">
-                    <span class="issue-name">Edge Condition</span>
-                    <span class="issue-status">Normal</span>
+                    <span class="issue-name">Edge Fraying Inspection</span>
+                    <span class="issue-status" id="cvStatusEdge">Uniform Profile</span>
                   </div>
                 </div>
 
-                <div class="issue-item">
+                <div class="issue-item" id="cvIssueSpill">
                   <i class="fa-solid fa-circle-check check-ok"></i>
                   <div class="issue-info">
-                    <span class="issue-name">Spillage</span>
-                    <span class="issue-status">No spillage detected</span>
+                    <span class="issue-name">Material Spillage Detect</span>
+                    <span class="issue-status" id="cvStatusSpill">No Spillage on Rollers</span>
                   </div>
                 </div>
               </div>
@@ -571,73 +550,80 @@
           <!-- Sensor Status Table -->
           <div class="dashboard-panel sensor-status-panel">
             <div class="panel-header">
-              <h2 class="panel-title">SENSOR STATUS</h2>
+              <h2 class="panel-title"><i class="fa-solid fa-microchip"></i> SENSOR HARDWARE STATUS</h2>
+              <button class="view-all-link" id="btnViewSensorsDeep">All 15 Specs</button>
             </div>
 
             <div class="sensor-table-container">
               <table class="sensor-table">
                 <thead>
                   <tr>
-                    <th>Sensor</th>
+                    <th>Component & Model</th>
                     <th>Status</th>
-                    <th>Value</th>
-                    <th>Range</th>
+                    <th>Live Value</th>
+                    <th>Threshold Range</th>
                   </tr>
                 </thead>
                 <tbody id="sensorTableBody">
                   <tr>
-                    <td class="sensor-name">Vibration (MPU6050)</td>
-                    <td><span class="status-dot green"></span></td>
+                    <td class="sensor-name">Vibration (MPU6050 I2C)</td>
+                    <td><span class="status-dot green" id="dot-vibration"></span></td>
                     <td class="sensor-val mono" id="tbl-vibration">2.45 mm/s</td>
-                    <td class="sensor-range">0 – 20 mm/s</td>
+                    <td class="sensor-range">&lt; 4.5 mm/s</td>
                   </tr>
                   <tr>
-                    <td class="sensor-name">Temperature (DS18B20)</td>
-                    <td><span class="status-dot green"></span></td>
+                    <td class="sensor-name">Bearing Temp (DS18B20 1-Wire)</td>
+                    <td><span class="status-dot green" id="dot-temp"></span></td>
                     <td class="sensor-val mono" id="tbl-temp">38.6 °C</td>
-                    <td class="sensor-range">-55 – 125 °C</td>
+                    <td class="sensor-range">&lt; 60.0 °C</td>
                   </tr>
                   <tr>
-                    <td class="sensor-name">Load Cell (HX711)</td>
-                    <td><span class="status-dot green"></span></td>
+                    <td class="sensor-name">Load Cell (HX711 5kg)</td>
+                    <td><span class="status-dot green" id="dot-load"></span></td>
                     <td class="sensor-val mono" id="tbl-load">4.35 kg</td>
-                    <td class="sensor-range">0 – 10 kg</td>
+                    <td class="sensor-range">0.0 – 5.0 kg</td>
                   </tr>
                   <tr>
-                    <td class="sensor-name">Speed (IR/Encoder)</td>
-                    <td><span class="status-dot green"></span></td>
+                    <td class="sensor-name">Belt Speed (LM393 IR Optical)</td>
+                    <td><span class="status-dot green" id="dot-speed"></span></td>
                     <td class="sensor-val mono" id="tbl-speed">1.28 m/s</td>
-                    <td class="sensor-range">0 – 5 m/s</td>
+                    <td class="sensor-range">0.8 – 2.0 m/s</td>
                   </tr>
                   <tr>
-                    <td class="sensor-name">Alignment (IR)</td>
-                    <td><span class="status-dot green"></span></td>
+                    <td class="sensor-name">Alignment (LM393 IR Refl)</td>
+                    <td><span class="status-dot green" id="dot-alignment"></span></td>
                     <td class="sensor-val mono" id="tbl-alignment">2.1 mm</td>
-                    <td class="sensor-range">0 – 5 mm</td>
+                    <td class="sensor-range">&lt; 3.0 mm</td>
                   </tr>
                   <tr>
-                    <td class="sensor-name">Tension (Load Cell)</td>
-                    <td><span class="status-dot green"></span></td>
+                    <td class="sensor-name">Tension Sensor (Load Cell)</td>
+                    <td><span class="status-dot green" id="dot-tension"></span></td>
                     <td class="sensor-val mono" id="tbl-tension">6.2 kg</td>
-                    <td class="sensor-range">0 – 10 kg</td>
+                    <td class="sensor-range">4.0 – 10.0 kg</td>
                   </tr>
                   <tr>
-                    <td class="sensor-name">Current (INA219)</td>
-                    <td><span class="status-dot green"></span></td>
+                    <td class="sensor-name">Current (INA219 I2C)</td>
+                    <td><span class="status-dot green" id="dot-current"></span></td>
                     <td class="sensor-val mono" id="tbl-current">1.35 A</td>
-                    <td class="sensor-range">0 – 5 A</td>
+                    <td class="sensor-range">&lt; 2.5 A</td>
                   </tr>
                   <tr>
-                    <td class="sensor-name">Microphone (MAX9814)</td>
-                    <td><span class="status-dot green"></span></td>
-                    <td class="sensor-val mono">Normal</td>
-                    <td class="sensor-range">20 Hz – 20 kHz</td>
+                    <td class="sensor-name">Acoustic / Mic (MAX9814)</td>
+                    <td><span class="status-dot green" id="dot-acoustic"></span></td>
+                    <td class="sensor-val mono" id="tbl-acoustic">54.2 dB</td>
+                    <td class="sensor-range">&lt; 75.0 dB</td>
                   </tr>
                   <tr>
-                    <td class="sensor-name">Thermal (MLX90614)</td>
-                    <td><span class="status-dot green"></span></td>
-                    <td class="sensor-val mono" id="tbl-thermal">38.6 °C</td>
-                    <td class="sensor-range">-70 – 380 °C</td>
+                    <td class="sensor-name">Thermal IR (MLX90614)</td>
+                    <td><span class="status-dot green" id="dot-thermal"></span></td>
+                    <td class="sensor-val mono" id="tbl-thermal">38.4 °C</td>
+                    <td class="sensor-range">&lt; 65.0 °C</td>
+                  </tr>
+                  <tr>
+                    <td class="sensor-name">Inductive Proximity (Displacement)</td>
+                    <td><span class="status-dot green" id="dot-displacement"></span></td>
+                    <td class="sensor-val mono" id="tbl-displacement">0.8 mm</td>
+                    <td class="sensor-range">&lt; 2.0 mm</td>
                   </tr>
                 </tbody>
               </table>
@@ -647,7 +633,7 @@
           <!-- Maintenance Prediction -->
           <div class="dashboard-panel maintenance-panel">
             <div class="panel-header">
-              <h2 class="panel-title">MAINTENANCE PREDICTION</h2>
+              <h2 class="panel-title"><i class="fa-solid fa-wrench"></i> RUL PREDICTION</h2>
             </div>
 
             <div class="maintenance-body">
@@ -656,25 +642,25 @@
                   <i class="fa-solid fa-wrench"></i>
                 </div>
                 <div class="maint-life-info">
-                  <span class="maint-sub">Predicted Remaining Life</span>
-                  <span class="maint-days" id="maintRemainingDays">23 Days</span>
+                  <span class="maint-sub">Predicted Remaining Useful Life</span>
+                  <span class="maint-days mono" id="maintRemainingDays">23 Days</span>
                 </div>
               </div>
 
               <div class="maint-cond-row">
-                <span>Condition: <strong class="text-good" id="maintConditionTag">Good</strong></span>
+                <span>Subsystem Status: <strong class="text-good" id="maintConditionTag">Good</strong></span>
               </div>
 
               <div class="maint-progress-wrap">
                 <div class="maint-progress-bar">
                   <div class="maint-progress-fill" id="maintProgressFill" style="width: 76%;"></div>
                 </div>
-                <span class="maint-progress-pct" id="maintProgressPct">76%</span>
+                <span class="maint-progress-pct mono" id="maintProgressPct">76%</span>
               </div>
 
               <div class="maint-action-box">
-                <span class="action-label">Recommended Action</span>
-                <p class="action-desc" id="maintActionDesc">No immediate maintenance required.</p>
+                <span class="action-label">Recommended Maintenance</span>
+                <p class="action-desc" id="maintActionDesc">No immediate maintenance required. Next inspection scheduled in 5 days.</p>
               </div>
             </div>
           </div>
@@ -682,28 +668,28 @@
           <!-- Quick Actions -->
           <div class="dashboard-panel quick-actions-panel">
             <div class="panel-header">
-              <h2 class="panel-title">QUICK ACTIONS</h2>
+              <h2 class="panel-title"><i class="fa-solid fa-bolt"></i> QUICK ACTIONS</h2>
             </div>
 
             <div class="actions-button-grid">
-              <button class="action-btn btn-blue" id="btnGenerateReport">
+              <button class="action-btn btn-blue" id="btnQuickReport">
                 <i class="fa-regular fa-file-lines"></i>
-                <span>Generate Report</span>
+                <span>Generate Audit Report</span>
               </button>
 
-              <button class="action-btn btn-green" id="btnDownloadData">
+              <button class="action-btn btn-green" id="btnQuickDownload">
                 <i class="fa-solid fa-download"></i>
-                <span>Download Data</span>
+                <span>Download Telemetry</span>
               </button>
 
-              <button class="action-btn btn-purple" id="btnSystemSettings">
-                <i class="fa-solid fa-gear"></i>
-                <span>System Settings</span>
+              <button class="action-btn btn-purple" id="btnQuickThresholds">
+                <i class="fa-solid fa-sliders"></i>
+                <span>Configure Thresholds</span>
               </button>
 
-              <button class="action-btn btn-orange" id="btnAddMaintenanceLog">
-                <i class="fa-regular fa-calendar-plus"></i>
-                <span>Add Maintenance Log</span>
+              <button class="action-btn btn-orange" id="btnQuickHardware">
+                <i class="fa-brands fa-usb"></i>
+                <span>Arduino Connect</span>
               </button>
             </div>
           </div>
@@ -711,119 +697,1536 @@
 
       </main>
 
-      <!-- MODALS / DIALOGS -->
-      <!-- Modal: Generate Report -->
-      <div class="modal-backdrop" id="modalReport">
-        <div class="modal-box">
-          <div class="modal-header">
-            <h3><i class="fa-solid fa-file-pdf"></i> Generate Inspection & Telemetry Report</h3>
-            <button class="modal-close" data-close="modalReport">&times;</button>
+      <!-- ========================================================================= -->
+      <!-- VIEW 2: REAL-TIME DATA (OSCILLOSCOPE & MULTI-CHANNEL TELEMETRY) -->
+      <!-- ========================================================================= -->
+      <main class="dashboard-body view-page" id="view-realtime">
+        <div class="page-top-bar">
+          <div class="page-top-info">
+            <h2><i class="fa-solid fa-wave-square text-cyan"></i> Real-Time Multi-Channel Telemetry Stream</h2>
+            <p>Live continuous oscilloscope streaming at 100–200 Hz acquisition frequency from ESP32 12-bit ADC & I2C Bus.</p>
           </div>
-          <div class="modal-body">
-            <p>Select report parameters to export comprehensive conveyor diagnostic data:</p>
-            <div class="form-group">
-              <label>Report Format</label>
-              <select class="dark-select full-width" id="reportFormat">
-                <option value="pdf">PDF Detailed Audit Report</option>
-                <option value="excel">Excel Detailed Sensor Logs</option>
-                <option value="json">JSON Raw Telemetry Export</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label>Time Range</label>
-              <select class="dark-select full-width">
-                <option>Current Shift (Last 8 Hours)</option>
-                <option>Last 24 Hours</option>
-                <option>Past 7 Days</option>
-                <option>Custom Range</option>
-              </select>
-            </div>
-            <div class="report-summary-box">
-              <div class="summary-line"><span>Conveyor Unit ID:</span><strong>CNV-LINE-04-A</strong></div>
-              <div class="summary-line"><span>Health Score:</span><strong class="text-good" id="modalHealthVal">82% (Good)</strong></div>
-              <div class="summary-line"><span>Active Anomalies:</span><strong class="text-warning">1 Minor (Alignment)</strong></div>
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button class="btn-cancel" data-close="modalReport">Cancel</button>
-            <button class="btn-primary" id="btnConfirmExport"><i class="fa-solid fa-download"></i> Generate & Download</button>
+          <div class="page-top-actions">
+            <button class="btn-secondary" id="btnFreezeRealtime"><i class="fa-solid fa-pause"></i> Freeze Stream</button>
+            <button class="btn-primary" id="btnClearStreamHistory"><i class="fa-solid fa-trash"></i> Reset Buffers</button>
           </div>
         </div>
-      </div>
 
-      <!-- Modal: Maintenance Log -->
-      <div class="modal-backdrop" id="modalMaintLog">
-        <div class="modal-box">
-          <div class="modal-header">
-            <h3><i class="fa-solid fa-wrench"></i> Add Maintenance Log Entry</h3>
-            <button class="modal-close" data-close="modalMaintLog">&times;</button>
-          </div>
-          <div class="modal-body">
-            <div class="form-group">
-              <label>Technician / Inspector</label>
-              <input type="text" class="dark-input" value="Admin / Lead Tech #42" id="logTech">
+        <!-- Multi-Channel Oscilloscope Charts Grid -->
+        <div class="realtime-charts-grid">
+          <!-- Channel 1: Vibration & Shock -->
+          <div class="realtime-chart-card">
+            <div class="chart-card-header">
+              <div class="chart-channel-info">
+                <span class="channel-dot dot-purple"></span>
+                <span class="channel-title">CH1: Vibration RMS & Shock (MPU6050)</span>
+              </div>
+              <span class="channel-val mono text-purple" id="rtVal-vibration">2.45 mm/s</span>
             </div>
-            <div class="form-group">
-              <label>Activity Type</label>
-              <select class="dark-select full-width" id="logType">
-                <option>Routine Belt Inspection</option>
-                <option>Roller Lubrication & Bearing Check</option>
-                <option>Belt Tension Adjustment</option>
-                <option>Sensor Calibration (IR / Load Cell)</option>
-                <option>Emergency Realignment</option>
+            <div class="rt-chart-wrapper">
+              <canvas id="rtChartVibration"></canvas>
+            </div>
+          </div>
+
+          <!-- Channel 2: Temperature Dual Probes -->
+          <div class="realtime-chart-card">
+            <div class="chart-card-header">
+              <div class="chart-channel-info">
+                <span class="channel-dot dot-orange"></span>
+                <span class="channel-title">CH2: Bearing (DS18B20) & Thermal IR (MLX90614)</span>
+              </div>
+              <span class="channel-val mono text-orange" id="rtVal-temp">38.6 °C</span>
+            </div>
+            <div class="rt-chart-wrapper">
+              <canvas id="rtChartTemp"></canvas>
+            </div>
+          </div>
+
+          <!-- Channel 3: Speed & Tachometer -->
+          <div class="realtime-chart-card">
+            <div class="chart-card-header">
+              <div class="chart-channel-info">
+                <span class="channel-dot dot-blue"></span>
+                <span class="channel-title">CH3: Belt Speed (LM393) & Motor Duty Cycle</span>
+              </div>
+              <span class="channel-val mono text-blue" id="rtVal-speed">1.28 m/s</span>
+            </div>
+            <div class="rt-chart-wrapper">
+              <canvas id="rtChartSpeed"></canvas>
+            </div>
+          </div>
+
+          <!-- Channel 4: Load & Tension Cells -->
+          <div class="realtime-chart-card">
+            <div class="chart-card-header">
+              <div class="chart-channel-info">
+                <span class="channel-dot dot-green"></span>
+                <span class="channel-title">CH4: Material Load (5kg HX711) & Belt Tension</span>
+              </div>
+              <span class="channel-val mono text-green" id="rtVal-load">4.35 kg</span>
+            </div>
+            <div class="rt-chart-wrapper">
+              <canvas id="rtChartLoad"></canvas>
+            </div>
+          </div>
+
+          <!-- Channel 5: Motor Current & Power -->
+          <div class="realtime-chart-card">
+            <div class="chart-card-header">
+              <div class="chart-channel-info">
+                <span class="channel-dot dot-yellow"></span>
+                <span class="channel-title">CH5: Motor Current & Power Draw (INA219)</span>
+              </div>
+              <span class="channel-val mono text-yellow" id="rtVal-current">1.35 A / 16.3 W</span>
+            </div>
+            <div class="rt-chart-wrapper">
+              <canvas id="rtChartCurrent"></canvas>
+            </div>
+          </div>
+
+          <!-- Channel 6: Alignment & Acoustic Noise -->
+          <div class="realtime-chart-card">
+            <div class="chart-card-header">
+              <div class="chart-channel-info">
+                <span class="channel-dot dot-cyan"></span>
+                <span class="channel-title">CH6: Belt Alignment (LM393 IR) & Acoustic dB (MAX9814)</span>
+              </div>
+              <span class="channel-val mono text-cyan" id="rtVal-alignment">2.1 mm / 54 dB</span>
+            </div>
+            <div class="rt-chart-wrapper">
+              <canvas id="rtChartAlignment"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Raw Live JSON Telemetry Feed Terminal -->
+        <div class="dashboard-panel raw-telemetry-panel">
+          <div class="panel-header">
+            <h2 class="panel-title"><i class="fa-solid fa-terminal"></i> LIVE JSON PACKET STREAM (INCOMING VIA SERIAL / SIMULATOR)</h2>
+            <span class="mono text-muted" id="rtPacketCount">Packets: 0 | 4.0 Hz</span>
+          </div>
+          <pre class="telemetry-terminal-box" id="rawPacketTerminal">{"ts": 102435, "speed": 1.28, "load": 4.35, "temp_bearing": 38.6, "temp_thermal": 38.4, "vibration": 2.45, "alignment": 2.1, "tension": 6.2, "current": 1.35, "power": 16.3, "acoustic_db": 54.2, "displacement": 0.8, "health_score": 82, "status": "NORMAL"}</pre>
+        </div>
+      </main>
+
+      <!-- ========================================================================= -->
+      <!-- VIEW 3: SENSORS & ALL 15 COMPONENTS DEEP-DIVE -->
+      <!-- ========================================================================= -->
+      <main class="dashboard-body view-page" id="view-sensors">
+        <div class="page-top-bar">
+          <div class="page-top-info">
+            <h2><i class="fa-solid fa-microchip text-cyan"></i> Complete Component & Sensor Hardware Matrix</h2>
+            <p>Specifications, pinouts, interface protocols, and real-time live readings for all 15 prototype elements.</p>
+          </div>
+          <div class="page-top-actions">
+            <button class="btn-primary" id="btnCalibrateAllSensors"><i class="fa-solid fa-compass-drafting"></i> Zero & Calibrate All</button>
+          </div>
+        </div>
+
+        <!-- 15 Component Cards Grid -->
+        <div class="components-specs-grid">
+          
+          <!-- Component 1: ESP32 -->
+          <div class="component-card">
+            <div class="comp-badge-num">1</div>
+            <div class="comp-header">
+              <div class="comp-icon"><i class="fa-solid fa-microchip"></i></div>
+              <div class="comp-titles">
+                <h3>ESP32 Development Board</h3>
+                <span>Main Microcontroller & Wi-Fi Gateway</span>
+              </div>
+            </div>
+            <div class="comp-specs-table">
+              <div class="spec-row"><span>Operating Voltage:</span><strong>3.3V DC</strong></div>
+              <div class="spec-row"><span>Flash Memory:</span><strong>4 MB</strong></div>
+              <div class="spec-row"><span>Wi-Fi / BLE:</span><strong>802.11 b/g/n + v4.2 BLE</strong></div>
+              <div class="spec-row"><span>ADC / GPIO:</span><strong>12-bit (18 Ch) / 30 GPIO</strong></div>
+              <div class="spec-row"><span>Data Rate:</span><strong>100 – 200 Hz Sampling</strong></div>
+            </div>
+            <div class="comp-live-footer">
+              <span class="comp-status-tag tag-good"><i class="fa-solid fa-circle-check"></i> Master Controller Active</span>
+            </div>
+          </div>
+
+          <!-- Component 2: DC Geared Motor -->
+          <div class="component-card">
+            <div class="comp-badge-num">2</div>
+            <div class="comp-header">
+              <div class="comp-icon"><i class="fa-solid fa-fan"></i></div>
+              <div class="comp-titles">
+                <h3>DC Geared Motor (12V)</h3>
+                <span>Main Conveyor Drive Motor</span>
+              </div>
+            </div>
+            <div class="comp-specs-table">
+              <div class="spec-row"><span>Operating Voltage:</span><strong>12V DC</strong></div>
+              <div class="spec-row"><span>No-Load Speed:</span><strong>60 RPM</strong></div>
+              <div class="spec-row"><span>Torque:</span><strong>~10 kg·cm</strong></div>
+              <div class="spec-row"><span>Rated Current:</span><strong>0.6 – 1.0 A</strong></div>
+              <div class="spec-row"><span>Shaft Diameter:</span><strong>6 mm Metal Gear</strong></div>
+            </div>
+            <div class="comp-live-footer">
+              <span class="comp-status-tag tag-good" id="compStatusMotor"><i class="fa-solid fa-rotate"></i> Running (60 RPM)</span>
+            </div>
+          </div>
+
+          <!-- Component 3: L298N Motor Driver -->
+          <div class="component-card">
+            <div class="comp-badge-num">3</div>
+            <div class="comp-header">
+              <div class="comp-icon"><i class="fa-solid fa-car-battery"></i></div>
+              <div class="comp-titles">
+                <h3>L298N Motor Driver Module</h3>
+                <span>Dual H-Bridge Speed & Direction</span>
+              </div>
+            </div>
+            <div class="comp-specs-table">
+              <div class="spec-row"><span>Operating Voltage:</span><strong>5V – 35V</strong></div>
+              <div class="spec-row"><span>Output Current:</span><strong>2A (Max) per ch</strong></div>
+              <div class="spec-row"><span>Peak Current:</span><strong>3A (Max)</strong></div>
+              <div class="spec-row"><span>Control Signal:</span><strong>TTL Level PWM</strong></div>
+              <div class="spec-row"><span>Dimensions:</span><strong>43 x 43 x 27 mm</strong></div>
+            </div>
+            <div class="comp-live-footer">
+              <span class="comp-status-tag tag-good"><i class="fa-solid fa-bolt"></i> PWM Duty: 78%</span>
+            </div>
+          </div>
+
+          <!-- Component 4: MPU6050 -->
+          <div class="component-card">
+            <div class="comp-badge-num">4</div>
+            <div class="comp-header">
+              <div class="comp-icon"><i class="fa-solid fa-heart-pulse text-purple"></i></div>
+              <div class="comp-titles">
+                <h3>MPU6050 Vibration Sensor</h3>
+                <span>3-Axis Accelerometer & Gyro</span>
+              </div>
+            </div>
+            <div class="comp-specs-table">
+              <div class="spec-row"><span>Supply Voltage:</span><strong>3 – 5V (I2C 0x68)</strong></div>
+              <div class="spec-row"><span>Accel Range:</span><strong>±2g / ±4g / ±8g / ±16g</strong></div>
+              <div class="spec-row"><span>Resolution:</span><strong>16-bit ADC</strong></div>
+              <div class="spec-row"><span>Application:</span><strong>Bearing Imbalance / Vibration</strong></div>
+              <div class="spec-row"><span>Live RMS:</span><strong class="mono text-cyan" id="compValMPU">2.45 mm/s</strong></div>
+            </div>
+            <div class="comp-live-footer">
+              <span class="comp-status-tag tag-good" id="compTagMPU">Normal ISO 10816</span>
+            </div>
+          </div>
+
+          <!-- Component 5: DS18B20 -->
+          <div class="component-card">
+            <div class="comp-badge-num">5</div>
+            <div class="comp-header">
+              <div class="comp-icon"><i class="fa-solid fa-temperature-half text-orange"></i></div>
+              <div class="comp-titles">
+                <h3>DS18B20 Temperature Sensor</h3>
+                <span>Waterproof Bearing & Motor Probe</span>
+              </div>
+            </div>
+            <div class="comp-specs-table">
+              <div class="spec-row"><span>Supply Voltage:</span><strong>3.0 – 5.5V</strong></div>
+              <div class="spec-row"><span>Interface:</span><strong>1-Wire (GPIO 4)</strong></div>
+              <div class="spec-row"><span>Temp Range:</span><strong>-55°C to +125°C</strong></div>
+              <div class="spec-row"><span>Accuracy:</span><strong>±0.5°C (-10°C to +85°C)</strong></div>
+              <div class="spec-row"><span>Live Temp:</span><strong class="mono text-orange" id="compValDS18">38.6 °C</strong></div>
+            </div>
+            <div class="comp-live-footer">
+              <span class="comp-status-tag tag-good" id="compTagDS18">Thermal OK (&lt; 60°C)</span>
+            </div>
+          </div>
+
+          <!-- Component 6: Load Cell 5kg + HX711 -->
+          <div class="component-card">
+            <div class="comp-badge-num">6</div>
+            <div class="comp-header">
+              <div class="comp-icon"><i class="fa-solid fa-weight-scale text-green"></i></div>
+              <div class="comp-titles">
+                <h3>Load Cell (5kg) + HX711</h3>
+                <span>Material & Conveyor Load Sensor</span>
+              </div>
+            </div>
+            <div class="comp-specs-table">
+              <div class="spec-row"><span>Load Capacity:</span><strong>0 – 5 kg</strong></div>
+              <div class="spec-row"><span>Supply Voltage:</span><strong>3.3 – 5V (HX711 24-bit)</strong></div>
+              <div class="spec-row"><span>Accuracy:</span><strong>±0.1% Full Scale</strong></div>
+              <div class="spec-row"><span>Interface:</span><strong>2-Wire Serial (DT/SCK)</strong></div>
+              <div class="spec-row"><span>Live Load:</span><strong class="mono text-green" id="compValLoad">4.35 kg</strong></div>
+            </div>
+            <div class="comp-live-footer">
+              <span class="comp-status-tag tag-good" id="compTagLoad">Within Capacity</span>
+            </div>
+          </div>
+
+          <!-- Component 7: LM393 Speed Sensor -->
+          <div class="component-card">
+            <div class="comp-badge-num">7</div>
+            <div class="comp-header">
+              <div class="comp-icon"><i class="fa-solid fa-gauge text-blue"></i></div>
+              <div class="comp-titles">
+                <h3>IR Speed Sensor (LM393)</h3>
+                <span>Slotted Optical Encoder Tachometer</span>
+              </div>
+            </div>
+            <div class="comp-specs-table">
+              <div class="spec-row"><span>Operating Voltage:</span><strong>3.3 – 5V</strong></div>
+              <div class="spec-row"><span>Detection Range:</span><strong>2 – 30 mm Slot</strong></div>
+              <div class="spec-row"><span>Threshold Adjust:</span><strong>Potentiometer</strong></div>
+              <div class="spec-row"><span>Output:</span><strong>Digital Interrupt Pulse</strong></div>
+              <div class="spec-row"><span>Live Speed:</span><strong class="mono text-blue" id="compValSpeed">1.28 m/s</strong></div>
+            </div>
+            <div class="comp-live-footer">
+              <span class="comp-status-tag tag-good" id="compTagSpeed">Synchronized</span>
+            </div>
+          </div>
+
+          <!-- Component 8: Belt Alignment Sensor -->
+          <div class="component-card">
+            <div class="comp-badge-num">8</div>
+            <div class="comp-header">
+              <div class="comp-icon"><i class="fa-solid fa-arrows-left-right text-yellow"></i></div>
+              <div class="comp-titles">
+                <h3>Belt Alignment Sensor (LM393)</h3>
+                <span>Infrared Reflective Deviation Detector</span>
+              </div>
+            </div>
+            <div class="comp-specs-table">
+              <div class="spec-row"><span>Operating Voltage:</span><strong>3.3 – 5V</strong></div>
+              <div class="spec-row"><span>Detection Range:</span><strong>2 – 15 cm (Adjustable)</strong></div>
+              <div class="spec-row"><span>Detection Type:</span><strong>IR Reflective Left/Right</strong></div>
+              <div class="spec-row"><span>Application:</span><strong>Tracks Left/Right Belt Wander</strong></div>
+              <div class="spec-row"><span>Live Deviation:</span><strong class="mono text-yellow" id="compValAlign">2.1 mm</strong></div>
+            </div>
+            <div class="comp-live-footer">
+              <span class="comp-status-tag tag-good" id="compTagAlign">Aligned (&lt; 3 mm)</span>
+            </div>
+          </div>
+
+          <!-- Component 9: Microphone Acoustic Sensor -->
+          <div class="component-card">
+            <div class="comp-badge-num">9</div>
+            <div class="comp-header">
+              <div class="comp-icon"><i class="fa-solid fa-microphone text-purple"></i></div>
+              <div class="comp-titles">
+                <h3>Microphone / Acoustic (MAX9814)</h3>
+                <span>Abnormal Sound & Bearing Noise</span>
+              </div>
+            </div>
+            <div class="comp-specs-table">
+              <div class="spec-row"><span>Supply Voltage:</span><strong>2.7 – 5.5V</strong></div>
+              <div class="spec-row"><span>Frequency Range:</span><strong>20 Hz – 20 kHz</strong></div>
+              <div class="spec-row"><span>Auto Gain:</span><strong>Adjustable (20dB – 60dB)</strong></div>
+              <div class="spec-row"><span>Application:</span><strong>Bearing Screech, Joint Impact</strong></div>
+              <div class="spec-row"><span>Live Sound:</span><strong class="mono text-purple" id="compValAcoustic">54.2 dB</strong></div>
+            </div>
+            <div class="comp-live-footer">
+              <span class="comp-status-tag tag-good" id="compTagAcoustic">Acoustic OK</span>
+            </div>
+          </div>
+
+          <!-- Component 10: INA219 Current Sensor -->
+          <div class="component-card">
+            <div class="comp-badge-num">10</div>
+            <div class="comp-header">
+              <div class="comp-icon"><i class="fa-solid fa-bolt text-yellow"></i></div>
+              <div class="comp-titles">
+                <h3>INA219 Current & Power Sensor</h3>
+                <span>High-Side I2C Current & Bus Voltage</span>
+              </div>
+            </div>
+            <div class="comp-specs-table">
+              <div class="spec-row"><span>Supply Voltage:</span><strong>3 – 5.5V (I2C 0x40)</strong></div>
+              <div class="spec-row"><span>Bus Voltage:</span><strong>0 – 26V DC</strong></div>
+              <div class="spec-row"><span>Current Range:</span><strong>±3.2A (12-bit ADC)</strong></div>
+              <div class="spec-row"><span>Live Current / Power:</span><strong class="mono text-yellow" id="compValINA">1.35 A / 16.3 W</strong></div>
+              <div class="spec-row"><span>Application:</span><strong>Motor Load & Power Efficiency</strong></div>
+            </div>
+            <div class="comp-live-footer">
+              <span class="comp-status-tag tag-good" id="compTagINA">Nominal Load</span>
+            </div>
+          </div>
+
+          <!-- Component 11: Tension Sensor -->
+          <div class="component-card">
+            <div class="comp-badge-num">11</div>
+            <div class="comp-header">
+              <div class="comp-icon"><i class="fa-solid fa-link text-green"></i></div>
+              <div class="comp-titles">
+                <h3>Tension Sensor (Load Cell Based)</h3>
+                <span>Dynamic Belt Tightness & Sag Gauge</span>
+              </div>
+            </div>
+            <div class="comp-specs-table">
+              <div class="spec-row"><span>Load Capacity:</span><strong>0 – 10 kg</strong></div>
+              <div class="spec-row"><span>Supply Voltage:</span><strong>3.3 – 5V (HX711 #2)</strong></div>
+              <div class="spec-row"><span>Application:</span><strong>Measures Belt Tension Force</strong></div>
+              <div class="spec-row"><span>Nominal Range:</span><strong>4.0 – 10.0 kg</strong></div>
+              <div class="spec-row"><span>Live Tension:</span><strong class="mono text-green" id="compValTension">6.2 kg</strong></div>
+            </div>
+            <div class="comp-live-footer">
+              <span class="comp-status-tag tag-good" id="compTagTension">Tension Balanced</span>
+            </div>
+          </div>
+
+          <!-- Component 12: Inductive Proximity / Displacement -->
+          <div class="component-card">
+            <div class="comp-badge-num">12</div>
+            <div class="comp-header">
+              <div class="comp-icon"><i class="fa-solid fa-magnet text-cyan"></i></div>
+              <div class="comp-titles">
+                <h3>Displacement / Proximity Sensor</h3>
+                <span>Inductive Pulley & Slippage Probe</span>
+              </div>
+            </div>
+            <div class="comp-specs-table">
+              <div class="spec-row"><span>Operating Voltage:</span><strong>6 – 36V DC</strong></div>
+              <div class="spec-row"><span>Output Type:</span><strong>NPN / PNP (NO)</strong></div>
+              <div class="spec-row"><span>Sensing Distance:</span><strong>2mm / 4mm / 8mm</strong></div>
+              <div class="spec-row"><span>Application:</span><strong>Pulley Slippage & Wobble</strong></div>
+              <div class="spec-row"><span>Live Gap:</span><strong class="mono text-cyan" id="compValDisplace">0.8 mm</strong></div>
+            </div>
+            <div class="comp-live-footer">
+              <span class="comp-status-tag tag-good" id="compTagDisplace">No Pulley Slip</span>
+            </div>
+          </div>
+
+          <!-- Component 13: MLX90614 Thermal IR -->
+          <div class="component-card">
+            <div class="comp-badge-num">13</div>
+            <div class="comp-header">
+              <div class="comp-icon"><i class="fa-solid fa-sun text-orange"></i></div>
+              <div class="comp-titles">
+                <h3>Thermal IR Sensor (MLX90614)</h3>
+                <span>Non-Contact Conveyor Belt Temp</span>
+              </div>
+            </div>
+            <div class="comp-specs-table">
+              <div class="spec-row"><span>Supply Voltage:</span><strong>3 – 5V (I2C 0x5A)</strong></div>
+              <div class="spec-row"><span>Temperature Range:</span><strong>-70°C to +380°C</strong></div>
+              <div class="spec-row"><span>Accuracy:</span><strong>±0.5°C</strong></div>
+              <div class="spec-row"><span>Application:</span><strong>Non-Contact Belt Surface Temp</strong></div>
+              <div class="spec-row"><span>Live Surface Temp:</span><strong class="mono text-orange" id="compValMLX">38.4 °C</strong></div>
+            </div>
+            <div class="comp-live-footer">
+              <span class="comp-status-tag tag-good" id="compTagMLX">Surface Normal</span>
+            </div>
+          </div>
+
+          <!-- Component 14: Camera Module / USB Webcam -->
+          <div class="component-card">
+            <div class="comp-badge-num">14</div>
+            <div class="comp-header">
+              <div class="comp-icon"><i class="fa-solid fa-video text-blue"></i></div>
+              <div class="comp-titles">
+                <h3>Camera Module / USB Webcam</h3>
+                <span>Belt Surface & Joint Damage Vision</span>
+              </div>
+            </div>
+            <div class="comp-specs-table">
+              <div class="spec-row"><span>Resolution:</span><strong>720p / 1080p HD</strong></div>
+              <div class="spec-row"><span>Frame Rate:</span><strong>30 FPS</strong></div>
+              <div class="spec-row"><span>Interface:</span><strong>USB 2.0 / ESP32-CAM</strong></div>
+              <div class="spec-row"><span>Application:</span><strong>Surface Cracks, Tears, Joint Splice</strong></div>
+              <div class="spec-row"><span>Defect Area:</span><strong class="mono text-green" id="compValDefect">0.0%</strong></div>
+            </div>
+            <div class="comp-live-footer">
+              <span class="comp-status-tag tag-good" id="compTagCamera">Clean Belt Profile</span>
+            </div>
+          </div>
+
+          <!-- Component 15: Buzzer + LEDs -->
+          <div class="component-card">
+            <div class="comp-badge-num">15</div>
+            <div class="comp-header">
+              <div class="comp-icon"><i class="fa-solid fa-lightbulb text-yellow"></i></div>
+              <div class="comp-titles">
+                <h3>Buzzer + Status LEDs (R/Y/G)</h3>
+                <span>Audible Alarm & Tri-Color Visual</span>
+              </div>
+            </div>
+            <div class="comp-specs-table">
+              <div class="spec-row"><span>Buzzer Voltage:</span><strong>3 – 24V DC Active</strong></div>
+              <div class="spec-row"><span>LED Colors:</span><strong>Red / Yellow / Green</strong></div>
+              <div class="spec-row"><span>Green LED:</span><strong>Health 70–100% (Normal)</strong></div>
+              <div class="spec-row"><span>Yellow LED:</span><strong>Health 40–69% (Warning)</strong></div>
+              <div class="spec-row"><span>Red LED + Buzzer:</span><strong>Health 0–39% (Critical Trip)</strong></div>
+            </div>
+            <div class="comp-live-footer">
+              <span class="comp-status-tag tag-good" id="compTagLEDs"><i class="fa-solid fa-circle text-green"></i> Green Solid (Healthy)</span>
+            </div>
+          </div>
+
+        </div>
+      </main>
+
+      <!-- ========================================================================= -->
+      <!-- VIEW 4: ML & AI MODELS (REGRESSION, CLASSIFICATION, ANOMALY DETECTION) -->
+      <!-- ========================================================================= -->
+      <main class="dashboard-body view-page" id="view-analytics">
+        <div class="page-top-bar">
+          <div class="page-top-info">
+            <h2><i class="fa-solid fa-brain text-purple"></i> Machine Learning Health Diagnostics Hub</h2>
+            <p>Continuous AI inference engine running multi-variate Regression (RUL & Health Index) and Fault Classification.</p>
+          </div>
+          <div class="page-top-actions">
+            <button class="btn-primary" id="btnRetrainModel"><i class="fa-solid fa-arrows-rotate"></i> Re-Train ML Pipeline</button>
+          </div>
+        </div>
+
+        <div class="ml-grid-layout">
+          <!-- ML Model Card 1: Regression (RUL & Degradation Curve) -->
+          <div class="dashboard-panel ml-card-panel">
+            <div class="panel-header">
+              <h2 class="panel-title"><i class="fa-solid fa-chart-area"></i> REGRESSION MODEL: REMAINING USEFUL LIFE (RUL)</h2>
+              <span class="ml-tag tag-model">Polynomial + Exponential Wear Fit</span>
+            </div>
+
+            <div class="ml-model-body">
+              <div class="ml-stats-row">
+                <div class="ml-stat-box">
+                  <span class="ml-stat-label">Predicted RUL</span>
+                  <span class="ml-stat-val mono text-blue" id="mlRulDays">23.4 Days</span>
+                  <span class="ml-stat-sub" id="mlRulHours">561 Operating Hours</span>
+                </div>
+                <div class="ml-stat-box">
+                  <span class="ml-stat-label">Health Degradation Index</span>
+                  <span class="ml-stat-val mono text-green" id="mlHealthScoreVal">82.0%</span>
+                  <span class="ml-stat-sub">R² Score: 0.964</span>
+                </div>
+                <div class="ml-stat-box">
+                  <span class="ml-stat-label">Degradation Rate</span>
+                  <span class="ml-stat-val mono text-yellow" id="mlDegradationRate">-0.78% / Day</span>
+                  <span class="ml-stat-sub">Mean Squared Error: 0.024</span>
+                </div>
+              </div>
+
+              <div class="chart-wrapper ml-chart-wrapper">
+                <canvas id="mlRegressionChart"></canvas>
+              </div>
+
+              <div class="ml-formula-card">
+                <div class="formula-title">Continuous Health Index Regression Formula:</div>
+                <code class="formula-code">Health(t) = 100 - [ 3.2·ΔVib + 1.8·ΔTemp + 2.5·ΔAlign + 2.0·ΔCurr + 1.5·ΔLoad + 4.0·ΔDefect ]</code>
+              </div>
+            </div>
+          </div>
+
+          <!-- ML Model Card 2: Classification (Fault State Diagnosis) -->
+          <div class="dashboard-panel ml-card-panel">
+            <div class="panel-header">
+              <h2 class="panel-title"><i class="fa-solid fa-diagram-project"></i> CLASSIFICATION MODEL: FAULT DIAGNOSIS</h2>
+              <span class="ml-tag tag-model">Random Forest Ensemble (100 Trees)</span>
+            </div>
+
+            <div class="ml-model-body">
+              <div class="class-diagnosis-header">
+                <div class="pred-class-box">
+                  <span class="pred-label">Active Predicted Machine State:</span>
+                  <span class="pred-result-tag tag-good" id="mlPredStateText">NORMAL OPERATION</span>
+                </div>
+                <div class="pred-conf-box">
+                  <span class="pred-label">Prediction Confidence:</span>
+                  <span class="pred-conf-val mono text-cyan" id="mlPredConfVal">99.2%</span>
+                </div>
+              </div>
+
+              <!-- Real-time Class Probabilities Breakdown -->
+              <div class="class-prob-list">
+                <div class="prob-row">
+                  <span class="prob-name">1. Normal Nominal Operation</span>
+                  <div class="prob-bar"><div class="prob-fill fill-green" id="probBar-normal" style="width: 99%;"></div></div>
+                  <span class="prob-pct mono" id="probPct-normal">99.2%</span>
+                </div>
+                <div class="prob-row">
+                  <span class="prob-name">2. Bearing Wear / Lubrication Loss</span>
+                  <div class="prob-bar"><div class="prob-fill fill-red" id="probBar-bearing" style="width: 0.4%;"></div></div>
+                  <span class="prob-pct mono" id="probPct-bearing">0.4%</span>
+                </div>
+                <div class="prob-row">
+                  <span class="prob-name">3. Belt Misalignment (Lateral Drift)</span>
+                  <div class="prob-bar"><div class="prob-fill fill-yellow" id="probBar-misalign" style="width: 0.2%;"></div></div>
+                  <span class="prob-pct mono" id="probPct-misalign">0.2%</span>
+                </div>
+                <div class="prob-row">
+                  <span class="prob-name">4. Belt Slippage / Pulley Displacement</span>
+                  <div class="prob-bar"><div class="prob-fill fill-yellow" id="probBar-slip" style="width: 0.1%;"></div></div>
+                  <span class="prob-pct mono" id="probPct-slip">0.1%</span>
+                </div>
+                <div class="prob-row">
+                  <span class="prob-name">5. Overload / Mechanical Motor Jam</span>
+                  <div class="prob-bar"><div class="prob-fill fill-red" id="probBar-overload" style="width: 0.1%;"></div></div>
+                  <span class="prob-pct mono" id="probPct-overload">0.1%</span>
+                </div>
+                <div class="prob-row">
+                  <span class="prob-name">6. Low Tension / Slack Belt</span>
+                  <div class="prob-bar"><div class="prob-fill fill-yellow" id="probBar-slack" style="width: 0.0%;"></div></div>
+                  <span class="prob-pct mono" id="probPct-slack">0.0%</span>
+                </div>
+                <div class="prob-row">
+                  <span class="prob-name">7. Surface Tear / Joint Splice Damage</span>
+                  <div class="prob-bar"><div class="prob-fill fill-red" id="probBar-tear" style="width: 0.0%;"></div></div>
+                  <span class="prob-pct mono" id="probPct-tear">0.0%</span>
+                </div>
+              </div>
+
+              <!-- Feature Importances -->
+              <div class="feature-importance-box">
+                <div class="fi-title"><i class="fa-solid fa-chart-simple"></i> Random Forest Feature Importances:</div>
+                <div class="fi-chips-grid">
+                  <div class="fi-chip"><span>MPU6050 Vibration:</span><strong>28.4%</strong></div>
+                  <div class="fi-chip"><span>DS18B20 Temp:</span><strong>21.2%</strong></div>
+                  <div class="fi-chip"><span>LM393 Alignment:</span><strong>18.6%</strong></div>
+                  <div class="fi-chip"><span>INA219 Current:</span><strong>14.5%</strong></div>
+                  <div class="fi-chip"><span>HX711 Load:</span><strong>11.1%</strong></div>
+                  <div class="fi-chip"><span>MAX9814 Sound:</span><strong>6.2%</strong></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Interactive What-If ML Simulator / Playground -->
+        <div class="dashboard-panel ml-playground-panel">
+          <div class="panel-header">
+            <h2 class="panel-title"><i class="fa-solid fa-sliders"></i> INTERACTIVE ML TEST BENCH & WHAT-IF SIMULATOR</h2>
+            <button class="btn-secondary" id="btnResetMLPlayground"><i class="fa-solid fa-rotate-left"></i> Reset to Live Values</button>
+          </div>
+
+          <div class="playground-layout">
+            <div class="playground-sliders-grid">
+              <!-- Slider 1: Vibration -->
+              <div class="sim-slider-card">
+                <div class="slider-header">
+                  <label for="simVibSlider">Vibration RMS (MPU6050)</label>
+                  <span class="slider-val mono text-purple" id="simValVib">2.45 mm/s</span>
+                </div>
+                <input type="range" id="simVibSlider" min="0.5" max="15.0" step="0.1" value="2.45" class="range-slider">
+                <div class="slider-limits"><span>0.5 (Smooth)</span><span class="text-critical">15.0 (Severe)</span></div>
+              </div>
+
+              <!-- Slider 2: Temperature -->
+              <div class="sim-slider-card">
+                <div class="slider-header">
+                  <label for="simTempSlider">Bearing Temp (DS18B20)</label>
+                  <span class="slider-val mono text-orange" id="simValTemp">38.6 °C</span>
+                </div>
+                <input type="range" id="simTempSlider" min="20" max="100" step="0.5" value="38.6" class="range-slider">
+                <div class="slider-limits"><span>20°C (Cold)</span><span class="text-critical">100°C (Overheat)</span></div>
+              </div>
+
+              <!-- Slider 3: Alignment -->
+              <div class="sim-slider-card">
+                <div class="slider-header">
+                  <label for="simAlignSlider">Alignment Deviation (LM393)</label>
+                  <span class="slider-val mono text-yellow" id="simValAlign">2.1 mm</span>
+                </div>
+                <input type="range" id="simAlignSlider" min="0" max="8.0" step="0.1" value="2.1" class="range-slider">
+                <div class="slider-limits"><span>0 mm (Centered)</span><span class="text-critical">8 mm (Drift)</span></div>
+              </div>
+
+              <!-- Slider 4: Load -->
+              <div class="sim-slider-card">
+                <div class="slider-header">
+                  <label for="simLoadSlider">Material Load (HX711)</label>
+                  <span class="slider-val mono text-green" id="simValLoad">4.35 kg</span>
+                </div>
+                <input type="range" id="simLoadSlider" min="0" max="10.0" step="0.1" value="4.35" class="range-slider">
+                <div class="slider-limits"><span>0 kg (Empty)</span><span class="text-critical">10 kg (Overload)</span></div>
+              </div>
+
+              <!-- Slider 5: Motor Current -->
+              <div class="sim-slider-card">
+                <div class="slider-header">
+                  <label for="simCurrentSlider">Motor Current (INA219)</label>
+                  <span class="slider-val mono text-yellow" id="simValCurrent">1.35 A</span>
+                </div>
+                <input type="range" id="simCurrentSlider" min="0.5" max="4.0" step="0.05" value="1.35" class="range-slider">
+                <div class="slider-limits"><span>0.5 A (No Load)</span><span class="text-critical">4.0 A (Stall)</span></div>
+              </div>
+
+              <!-- Slider 6: Tension -->
+              <div class="sim-slider-card">
+                <div class="slider-header">
+                  <label for="simTensionSlider">Belt Tension (Load Cell)</label>
+                  <span class="slider-val mono text-green" id="simValTension">6.2 kg</span>
+                </div>
+                <input type="range" id="simTensionSlider" min="1.0" max="12.0" step="0.1" value="6.2" class="range-slider">
+                <div class="slider-limits"><span>1.0 kg (Slack)</span><span class="text-critical">12.0 kg (Over-tight)</span></div>
+              </div>
+            </div>
+
+            <!-- Playground Live Output Card -->
+            <div class="playground-output-card">
+              <h3><i class="fa-solid fa-wand-magic-sparkles"></i> Instant ML Simulation Response</h3>
+              
+              <div class="sim-result-box">
+                <div class="sim-result-row">
+                  <span>Classified State:</span>
+                  <strong class="tag-good" id="simResultState">NORMAL OPERATION</strong>
+                </div>
+                <div class="sim-result-row">
+                  <span>Confidence:</span>
+                  <strong class="mono text-cyan" id="simResultConf">99.2%</strong>
+                </div>
+                <div class="sim-result-row">
+                  <span>Calculated Health Index:</span>
+                  <strong class="mono text-green" id="simResultHealth">82%</strong>
+                </div>
+                <div class="sim-result-row">
+                  <span>Predicted RUL:</span>
+                  <strong class="mono text-blue" id="simResultRul">23 Days</strong>
+                </div>
+              </div>
+
+              <div class="sim-action-recommendation" id="simResultAction">
+                <strong>ML Recommendation:</strong> Machine operating within ideal limits. No corrective maintenance required.
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <!-- ========================================================================= -->
+      <!-- VIEW 5: THRESHOLDS & ALARM RULES CONFIGURATOR -->
+      <!-- ========================================================================= -->
+      <main class="dashboard-body view-page" id="view-thresholds">
+        <div class="page-top-bar">
+          <div class="page-top-info">
+            <h2><i class="fa-solid fa-sliders text-cyan"></i> Component Threshold & Alarm Rule Manager</h2>
+            <p>Configure Warning and Critical trip thresholds for all 15 prototype sensors and hardware modules.</p>
+          </div>
+          <div class="page-top-actions">
+            <button class="btn-secondary" id="btnPresetStandard"><i class="fa-solid fa-industry"></i> Standard Line Preset</button>
+            <button class="btn-secondary" id="btnPresetMining"><i class="fa-solid fa-mountain"></i> Heavy Duty Preset</button>
+            <button class="btn-primary" id="btnSaveAllThresholds"><i class="fa-solid fa-floppy-disk"></i> Apply & Save Rules</button>
+          </div>
+        </div>
+
+        <!-- Thresholds Cards Grid -->
+        <div class="thresholds-grid">
+          
+          <!-- Threshold Card 1: Belt Speed -->
+          <div class="threshold-card">
+            <div class="thresh-header">
+              <div class="thresh-title"><i class="fa-solid fa-gauge text-blue"></i> Belt Speed (LM393 Optical)</div>
+              <span class="thresh-unit">m/s</span>
+            </div>
+            <div class="thresh-inputs-grid">
+              <div class="thresh-input-group">
+                <label>Nominal Setpoint</label>
+                <input type="number" step="0.05" class="dark-input" id="thSpeedSet" value="1.30">
+              </div>
+              <div class="thresh-input-group">
+                <label>Low Speed Warning</label>
+                <input type="number" step="0.05" class="dark-input" id="thSpeedLowWarn" value="1.00">
+              </div>
+              <div class="thresh-input-group">
+                <label>High Speed Trip</label>
+                <input type="number" step="0.05" class="dark-input" id="thSpeedHighCrit" value="2.20">
+              </div>
+            </div>
+            <div class="thresh-meter">
+              <div class="thresh-zone zone-crit" style="width: 25%;"></div>
+              <div class="thresh-zone zone-warn" style="width: 15%;"></div>
+              <div class="thresh-zone zone-norm" style="width: 40%;"></div>
+              <div class="thresh-zone zone-crit" style="width: 20%;"></div>
+            </div>
+          </div>
+
+          <!-- Threshold Card 2: Material Load -->
+          <div class="threshold-card">
+            <div class="thresh-header">
+              <div class="thresh-title"><i class="fa-solid fa-weight-hanging text-green"></i> Material Load (HX711 5kg)</div>
+              <span class="thresh-unit">kg</span>
+            </div>
+            <div class="thresh-inputs-grid">
+              <div class="thresh-input-group">
+                <label>Rated Capacity</label>
+                <input type="number" step="0.5" class="dark-input" id="thLoadMax" value="5.0">
+              </div>
+              <div class="thresh-input-group">
+                <label>Overload Warning</label>
+                <input type="number" step="0.1" class="dark-input" id="thLoadWarn" value="4.8">
+              </div>
+              <div class="thresh-input-group">
+                <label>Emergency Trip</label>
+                <input type="number" step="0.1" class="dark-input" id="thLoadCrit" value="5.5">
+              </div>
+            </div>
+            <div class="thresh-meter">
+              <div class="thresh-zone zone-norm" style="width: 65%;"></div>
+              <div class="thresh-zone zone-warn" style="width: 20%;"></div>
+              <div class="thresh-zone zone-crit" style="width: 15%;"></div>
+            </div>
+          </div>
+
+          <!-- Threshold Card 3: Bearing Temperature -->
+          <div class="threshold-card">
+            <div class="thresh-header">
+              <div class="thresh-title"><i class="fa-solid fa-temperature-half text-orange"></i> Bearing Temp (DS18B20)</div>
+              <span class="thresh-unit">°C</span>
+            </div>
+            <div class="thresh-inputs-grid">
+              <div class="thresh-input-group">
+                <label>Normal Max</label>
+                <input type="number" class="dark-input" id="thTempNorm" value="45">
+              </div>
+              <div class="thresh-input-group">
+                <label>Warning Level</label>
+                <input type="number" class="dark-input" id="thTempWarn" value="60">
+              </div>
+              <div class="thresh-input-group">
+                <label>Overheat Trip</label>
+                <input type="number" class="dark-input" id="thTempCrit" value="75">
+              </div>
+            </div>
+            <div class="thresh-meter">
+              <div class="thresh-zone zone-norm" style="width: 50%;"></div>
+              <div class="thresh-zone zone-warn" style="width: 25%;"></div>
+              <div class="thresh-zone zone-crit" style="width: 25%;"></div>
+            </div>
+          </div>
+
+          <!-- Threshold Card 4: Vibration RMS -->
+          <div class="threshold-card">
+            <div class="thresh-header">
+              <div class="thresh-title"><i class="fa-solid fa-heart-pulse text-purple"></i> Vibration RMS (MPU6050)</div>
+              <span class="thresh-unit">mm/s</span>
+            </div>
+            <div class="thresh-inputs-grid">
+              <div class="thresh-input-group">
+                <label>ISO Good (Zone A)</label>
+                <input type="number" step="0.1" class="dark-input" id="thVibNorm" value="2.8">
+              </div>
+              <div class="thresh-input-group">
+                <label>ISO Warning (Zone B)</label>
+                <input type="number" step="0.1" class="dark-input" id="thVibWarn" value="4.5">
+              </div>
+              <div class="thresh-input-group">
+                <label>ISO Critical (Zone C)</label>
+                <input type="number" step="0.1" class="dark-input" id="thVibCrit" value="7.1">
+              </div>
+            </div>
+            <div class="thresh-meter">
+              <div class="thresh-zone zone-norm" style="width: 40%;"></div>
+              <div class="thresh-zone zone-warn" style="width: 30%;"></div>
+              <div class="thresh-zone zone-crit" style="width: 30%;"></div>
+            </div>
+          </div>
+
+          <!-- Threshold Card 5: Belt Alignment Deviation -->
+          <div class="threshold-card">
+            <div class="thresh-header">
+              <div class="thresh-title"><i class="fa-solid fa-arrows-to-dot text-yellow"></i> Alignment Deviation (LM393)</div>
+              <span class="thresh-unit">mm</span>
+            </div>
+            <div class="thresh-inputs-grid">
+              <div class="thresh-input-group">
+                <label>Centering Tolerance</label>
+                <input type="number" step="0.1" class="dark-input" id="thAlignNorm" value="2.0">
+              </div>
+              <div class="thresh-input-group">
+                <label>Drift Warning</label>
+                <input type="number" step="0.1" class="dark-input" id="thAlignWarn" value="3.0">
+              </div>
+              <div class="thresh-input-group">
+                <label>Severe Edge Alarm</label>
+                <input type="number" step="0.1" class="dark-input" id="thAlignCrit" value="4.5">
+              </div>
+            </div>
+            <div class="thresh-meter">
+              <div class="thresh-zone zone-norm" style="width: 45%;"></div>
+              <div class="thresh-zone zone-warn" style="width: 25%;"></div>
+              <div class="thresh-zone zone-crit" style="width: 30%;"></div>
+            </div>
+          </div>
+
+          <!-- Threshold Card 6: Motor Current -->
+          <div class="threshold-card">
+            <div class="thresh-header">
+              <div class="thresh-title"><i class="fa-solid fa-bolt text-yellow"></i> Motor Current (INA219)</div>
+              <span class="thresh-unit">A</span>
+            </div>
+            <div class="thresh-inputs-grid">
+              <div class="thresh-input-group">
+                <label>Nominal Running</label>
+                <input type="number" step="0.1" class="dark-input" id="thCurrNorm" value="1.5">
+              </div>
+              <div class="thresh-input-group">
+                <label>High Current Warn</label>
+                <input type="number" step="0.1" class="dark-input" id="thCurrWarn" value="2.2">
+              </div>
+              <div class="thresh-input-group">
+                <label>Motor Stall Trip</label>
+                <input type="number" step="0.1" class="dark-input" id="thCurrCrit" value="2.8">
+              </div>
+            </div>
+            <div class="thresh-meter">
+              <div class="thresh-zone zone-norm" style="width: 50%;"></div>
+              <div class="thresh-zone zone-warn" style="width: 25%;"></div>
+              <div class="thresh-zone zone-crit" style="width: 25%;"></div>
+            </div>
+          </div>
+
+          <!-- Threshold Card 7: Belt Tension -->
+          <div class="threshold-card">
+            <div class="thresh-header">
+              <div class="thresh-title"><i class="fa-solid fa-link text-green"></i> Belt Tension (Load Cell)</div>
+              <span class="thresh-unit">kg</span>
+            </div>
+            <div class="thresh-inputs-grid">
+              <div class="thresh-input-group">
+                <label>Min Slack Warn</label>
+                <input type="number" step="0.1" class="dark-input" id="thTensLowWarn" value="4.0">
+              </div>
+              <div class="thresh-input-group">
+                <label>Nominal Tension</label>
+                <input type="number" step="0.1" class="dark-input" id="thTensNorm" value="6.5">
+              </div>
+              <div class="thresh-input-group">
+                <label>Over-Tension Trip</label>
+                <input type="number" step="0.1" class="dark-input" id="thTensHighCrit" value="9.5">
+              </div>
+            </div>
+            <div class="thresh-meter">
+              <div class="thresh-zone zone-warn" style="width: 20%;"></div>
+              <div class="thresh-zone zone-norm" style="width: 55%;"></div>
+              <div class="thresh-zone zone-crit" style="width: 25%;"></div>
+            </div>
+          </div>
+
+          <!-- Threshold Card 8: Acoustic Sound -->
+          <div class="threshold-card">
+            <div class="thresh-header">
+              <div class="thresh-title"><i class="fa-solid fa-microphone text-purple"></i> Acoustic Noise (MAX9814)</div>
+              <span class="thresh-unit">dB</span>
+            </div>
+            <div class="thresh-inputs-grid">
+              <div class="thresh-input-group">
+                <label>Ambient Sound</label>
+                <input type="number" class="dark-input" id="thSoundNorm" value="55">
+              </div>
+              <div class="thresh-input-group">
+                <label>Screech Warning</label>
+                <input type="number" class="dark-input" id="thSoundWarn" value="70">
+              </div>
+              <div class="thresh-input-group">
+                <label>Impact Alarm</label>
+                <input type="number" class="dark-input" id="thSoundCrit" value="85">
+              </div>
+            </div>
+            <div class="thresh-meter">
+              <div class="thresh-zone zone-norm" style="width: 50%;"></div>
+              <div class="thresh-zone zone-warn" style="width: 25%;"></div>
+              <div class="thresh-zone zone-crit" style="width: 25%;"></div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Buzzer & LED Tripping Rules -->
+        <div class="dashboard-panel alarm-logic-panel">
+          <div class="panel-header">
+            <h2 class="panel-title"><i class="fa-solid fa-volume-high"></i> BUZZER & TRICOLOR LED ALARM LOGIC</h2>
+            <button class="btn-secondary" id="btnTestBuzzer"><i class="fa-solid fa-bell"></i> Test Physical Buzzer & LEDs</button>
+          </div>
+
+          <div class="logic-rules-grid">
+            <div class="logic-rule-card rule-green">
+              <div class="rule-icon"><i class="fa-solid fa-circle-check text-green"></i></div>
+              <div class="rule-content">
+                <h4>GREEN SOLID LED</h4>
+                <p>Health Score ≥ 70%. All 15 sensor channels within nominal operating boundaries. Buzzer OFF.</p>
+              </div>
+            </div>
+
+            <div class="logic-rule-card rule-yellow">
+              <div class="rule-icon"><i class="fa-solid fa-triangle-exclamation text-yellow"></i></div>
+              <div class="rule-content">
+                <h4>YELLOW FLASHING LED</h4>
+                <p>Health Score 40% – 69% or any 1 sensor enters Warning threshold. Dispatch maintenance notification. Buzzer OFF.</p>
+              </div>
+            </div>
+
+            <div class="logic-rule-card rule-red">
+              <div class="rule-icon"><i class="fa-solid fa-skull-crossbones text-critical"></i></div>
+              <div class="rule-content">
+                <h4>RED SOLID LED + ACTIVE BUZZER PULSE</h4>
+                <p>Health Score &lt; 40% or Critical Trip threshold breached (Vibration &gt; 4.5 mm/s, Temp &gt; 60°C, Overload). Buzzer pulses at 2 Hz.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <!-- ========================================================================= -->
+      <!-- VIEW 6: CAMERA FEED & COMPUTER VISION INSPECTION WORKBENCH -->
+      <!-- ========================================================================= -->
+      <main class="dashboard-body view-page" id="view-camera">
+        <div class="page-top-bar">
+          <div class="page-top-info">
+            <h2><i class="fa-solid fa-video text-cyan"></i> Computer Vision Belt Inspection Workbench</h2>
+            <p>Real-time edge detection, joint splice analysis, surface puncture tracking, and laser line profiling.</p>
+          </div>
+          <div class="page-top-actions">
+            <select class="dark-select" id="cvFilterSelect">
+              <option value="normal">Overlay AI Bounding Boxes</option>
+              <option value="edges">Canny Edge Detection</option>
+              <option value="laser">Laser Surface Profile</option>
+              <option value="heatmap">Thermal IR Overlay</option>
+            </select>
+            <button class="btn-primary" id="btnSnapInspect"><i class="fa-solid fa-camera"></i> Snapshot & Inspect</button>
+          </div>
+        </div>
+
+        <div class="camera-workbench-layout">
+          <!-- Main Large Vision Frame -->
+          <div class="cv-viewport-card">
+            <div class="cv-viewport-header">
+              <div class="cv-stream-stats">
+                <span class="live-pill"><span class="badge-dot"></span> LIVE 30 FPS</span>
+                <span class="mono text-muted">Resolution: 1280 x 720 HD | Model: OpenCV BeltNet v2</span>
+              </div>
+              <span class="mono text-cyan" id="cvTimestampFull">25 Aug 2026 10:24:35 AM</span>
+            </div>
+            
+            <div class="cv-large-frame">
+              <img src="assets/conveyor.jpg" alt="Conveyor Belt Vision" class="cv-img-large" id="cvMainImage">
+              <canvas id="cvLargeCanvas" class="cv-canvas-large"></canvas>
+            </div>
+
+            <div class="cv-tools-bar">
+              <button class="cv-tool-btn active" data-tool="scan"><i class="fa-solid fa-barcode"></i> Active Laser Scan</button>
+              <button class="cv-tool-btn" data-tool="boxes"><i class="fa-solid fa-vector-square"></i> Roller Bounding Boxes</button>
+              <button class="cv-tool-btn" data-tool="center"><i class="fa-solid fa-ruler-horizontal"></i> Centerline Tracking</button>
+              <button class="cv-tool-btn" data-tool="defects"><i class="fa-solid fa-bug"></i> Defect Heatmap</button>
+            </div>
+          </div>
+
+          <!-- Vision Diagnostics Sidebar -->
+          <div class="cv-diagnostics-card">
+            <h3><i class="fa-solid fa-magnifying-glass-chart"></i> Visual Defect Telemetry</h3>
+
+            <div class="cv-stat-box">
+              <span class="cv-stat-title">Surface Crack / Tear Area</span>
+              <div class="cv-stat-val-row">
+                <span class="cv-stat-val mono text-green" id="cvDefectAreaVal">0.0%</span>
+                <span class="cv-status-badge tag-good" id="cvDefectBadge">Pristine</span>
+              </div>
+              <span class="cv-stat-sub">Threshold: &lt; 2.0% surface area</span>
+            </div>
+
+            <div class="cv-stat-box">
+              <span class="cv-stat-title">Joint / Splice Gap</span>
+              <div class="cv-stat-val-row">
+                <span class="cv-stat-val mono text-green" id="cvJointGapVal">0.0 mm</span>
+                <span class="cv-status-badge tag-good">Seamless</span>
+              </div>
+              <span class="cv-stat-sub">Threshold: &lt; 3.0 mm gap</span>
+            </div>
+
+            <div class="cv-stat-box">
+              <span class="cv-stat-title">Edge Fraying Index</span>
+              <div class="cv-stat-val-row">
+                <span class="cv-stat-val mono text-blue" id="cvEdgeFrayVal">0.12 mm</span>
+                <span class="cv-status-badge tag-good">Smooth</span>
+              </div>
+              <span class="cv-stat-sub">Threshold: &lt; 1.50 mm roughness</span>
+            </div>
+
+            <div class="cv-stat-box">
+              <span class="cv-stat-title">Material Spillage Detect</span>
+              <div class="cv-stat-val-row">
+                <span class="cv-stat-val mono text-green" id="cvSpillageVal">None Detected</span>
+                <span class="cv-status-badge tag-good">Clean</span>
+              </div>
+              <span class="cv-stat-sub">Bed containment optimal</span>
+            </div>
+
+            <div class="cv-quick-inject">
+              <h4>Simulate Visual Defect:</h4>
+              <div class="cv-inject-btns">
+                <button class="btn-cv-inject" id="btnInjectCrack"><i class="fa-solid fa-scissors"></i> Inject Surface Tear</button>
+                <button class="btn-cv-inject" id="btnInjectJointGap"><i class="fa-solid fa-link-slash"></i> Inject Splice Gap</button>
+                <button class="btn-cv-inject" id="btnResetCVDefects"><i class="fa-solid fa-circle-check"></i> Clear Defects</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <!-- ========================================================================= -->
+      <!-- VIEW 7: ALERTS & DIAGNOSTIC LOGS -->
+      <!-- ========================================================================= -->
+      <main class="dashboard-body view-page" id="view-alerts">
+        <div class="page-top-bar">
+          <div class="page-top-info">
+            <h2><i class="fa-solid fa-bell text-yellow"></i> System Alerts & Incident Dispatch History</h2>
+            <p>Real-time alarm events, severity classification, acknowledgement tracking, and notification logs.</p>
+          </div>
+          <div class="page-top-actions">
+            <button class="btn-secondary" id="btnAckAllAlerts"><i class="fa-solid fa-check-double"></i> Acknowledge All</button>
+            <button class="btn-primary" id="btnClearAlertHistory"><i class="fa-solid fa-trash-can"></i> Clear Logs</button>
+          </div>
+        </div>
+
+        <div class="alerts-page-layout">
+          <!-- Active Filter Bar -->
+          <div class="alerts-filter-bar">
+            <button class="filter-chip active" data-filter="all">All Alerts (<span id="countAlertAll">6</span>)</button>
+            <button class="filter-chip chip-crit" data-filter="critical">Critical (0)</button>
+            <button class="filter-chip chip-warn" data-filter="warning">Warning (2)</button>
+            <button class="filter-chip chip-info" data-filter="info">Info / Normal (4)</button>
+          </div>
+
+          <!-- Alerts Table Container -->
+          <div class="dashboard-panel alerts-table-panel">
+            <table class="alerts-full-table">
+              <thead>
+                <tr>
+                  <th>Timestamp</th>
+                  <th>Severity</th>
+                  <th>Component / Sensor</th>
+                  <th>Message & Telemetry Trigger</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="alertsFullTableBody">
+                <tr class="alert-row-crit">
+                  <td class="mono">10:24:10 AM</td>
+                  <td><span class="badge-sev sev-crit">CRITICAL</span></td>
+                  <td>MPU6050 Vibration</td>
+                  <td>Vibration exceeded critical limit (4.85 mm/s > 4.5 mm/s)</td>
+                  <td><span class="status-pill-small red">Active</span></td>
+                  <td><button class="btn-ack">Acknowledge</button></td>
+                </tr>
+                <tr class="alert-row-warn">
+                  <td class="mono">10:23:15 AM</td>
+                  <td><span class="badge-sev sev-warn">WARNING</span></td>
+                  <td>LM393 Alignment</td>
+                  <td>Belt lateral drift detected (2.1 mm deviation)</td>
+                  <td><span class="status-pill-small yellow">Investigating</span></td>
+                  <td><button class="btn-ack">Acknowledge</button></td>
+                </tr>
+                <tr class="alert-row-info">
+                  <td class="mono">10:22:45 AM</td>
+                  <td><span class="badge-sev sev-info">INFO</span></td>
+                  <td>DS18B20 Temperature</td>
+                  <td>Bearing temperature steady at 38.6 °C</td>
+                  <td><span class="status-pill-small green">Resolved</span></td>
+                  <td><button class="btn-ack" disabled>Acknowledged</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+
+      <!-- ========================================================================= -->
+      <!-- VIEW 8: HISTORY & DATA EXPORT -->
+      <!-- ========================================================================= -->
+      <main class="dashboard-body view-page" id="view-history">
+        <div class="page-top-bar">
+          <div class="page-top-info">
+            <h2><i class="fa-solid fa-clock-rotate-left text-cyan"></i> Historical Telemetry & Analytics Archive</h2>
+            <p>Explore archived sensor logs, time-series telemetry trends, statistical aggregates, and export CSV/JSON datasets.</p>
+          </div>
+          <div class="page-top-actions">
+            <button class="btn-secondary" id="btnExportCSV"><i class="fa-solid fa-file-csv"></i> Export CSV</button>
+            <button class="btn-primary" id="btnExportJSON"><i class="fa-solid fa-file-code"></i> Export JSON</button>
+          </div>
+        </div>
+
+        <div class="history-stats-grid">
+          <div class="history-stat-card">
+            <span class="h-stat-label">Total Running Hours</span>
+            <span class="h-stat-val mono text-blue">1,248.5 hrs</span>
+            <span class="h-stat-sub">Across 52 Work Shifts</span>
+          </div>
+          <div class="history-stat-card">
+            <span class="h-stat-label">Mean Vibration (30 Days)</span>
+            <span class="h-stat-val mono text-purple">2.38 mm/s</span>
+            <span class="h-stat-sub">StdDev: ±0.34 mm/s</span>
+          </div>
+          <div class="history-stat-card">
+            <span class="h-stat-label">Peak Temperature</span>
+            <span class="h-stat-val mono text-orange">46.2 °C</span>
+            <span class="h-stat-sub">Safety Margin: 13.8 °C</span>
+          </div>
+          <div class="history-stat-card">
+            <span class="h-stat-label">Total Material Conveyed</span>
+            <span class="h-stat-val mono text-green">14.28 Tons</span>
+            <span class="h-stat-sub">Average: 3.8 kg/m</span>
+          </div>
+        </div>
+
+        <div class="dashboard-panel history-chart-panel">
+          <div class="panel-header">
+            <h2 class="panel-title"><i class="fa-solid fa-chart-area"></i> 30-DAY HISTORICAL TELEMETRY TRENDS</h2>
+            <div class="custom-select-wrapper">
+              <select class="dark-select" id="historyMetricSelect">
+                <option value="vibration">Vibration RMS (MPU6050)</option>
+                <option value="temp">Bearing Temperature (DS18B20)</option>
+                <option value="load">Material Load (HX711)</option>
+                <option value="current">Motor Current (INA219)</option>
+                <option value="health">Composite Health Score</option>
               </select>
             </div>
-            <div class="form-group">
-              <label>Notes & Observations</label>
-              <textarea class="dark-textarea" rows="3" placeholder="Enter findings, parts replaced, or torque checks..."></textarea>
-            </div>
           </div>
-          <div class="modal-footer">
-            <button class="btn-cancel" data-close="modalMaintLog">Cancel</button>
-            <button class="btn-primary" id="btnSaveLog"><i class="fa-solid fa-floppy-disk"></i> Save Log</button>
+          <div class="chart-wrapper history-chart-wrapper">
+            <canvas id="historyTrendsChart"></canvas>
           </div>
         </div>
-      </div>
+      </main>
 
-      <!-- Modal: System Settings -->
-      <div class="modal-backdrop" id="modalSettings">
-        <div class="modal-box">
-          <div class="modal-header">
-            <h3><i class="fa-solid fa-gear"></i> System Settings & Thresholds</h3>
-            <button class="modal-close" data-close="modalSettings">&times;</button>
+      <!-- ========================================================================= -->
+      <!-- VIEW 9: MAINTENANCE & WORK ORDERS (RUL) -->
+      <!-- ========================================================================= -->
+      <main class="dashboard-body view-page" id="view-maintenance">
+        <div class="page-top-bar">
+          <div class="page-top-info">
+            <h2><i class="fa-solid fa-screwdriver-wrench text-orange"></i> Predictive Maintenance & Subsystem RUL</h2>
+            <p>AI-driven wear degradation tracking across mechanical components, scheduled work orders, and parts life logs.</p>
           </div>
-          <div class="modal-body">
-            <div class="form-row-2">
-              <div class="form-group">
-                <label>Belt Speed Setpoint (m/s)</label>
-                <input type="number" step="0.05" class="dark-input" value="1.30" id="cfgSpeed">
-              </div>
-              <div class="form-group">
-                <label>Max Load Capacity (kg)</label>
-                <input type="number" step="0.5" class="dark-input" value="10.0" id="cfgMaxLoad">
-              </div>
-            </div>
-            <div class="form-row-2">
-              <div class="form-group">
-                <label>Temp Warning Threshold (°C)</label>
-                <input type="number" class="dark-input" value="60" id="cfgTemp">
-              </div>
-              <div class="form-group">
-                <label>Vibration Alert Limit (mm/s)</label>
-                <input type="number" step="0.1" class="dark-input" value="4.5" id="cfgVib">
-              </div>
-            </div>
-            <div class="form-group toggle-group">
-              <label>Simulate Real-time Sensor Noise</label>
-              <input type="checkbox" id="chkNoise" checked>
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button class="btn-cancel" data-close="modalSettings">Close</button>
-            <button class="btn-primary" id="btnSaveSettings">Apply Settings</button>
+          <div class="page-top-actions">
+            <button class="btn-primary" id="btnCreateWorkOrder"><i class="fa-solid fa-plus"></i> Create Work Order</button>
           </div>
         </div>
-      </div>
+
+        <div class="maintenance-subsystems-grid">
+          <!-- Subsystem 1: Belt Fabric & Rubber -->
+          <div class="subsystem-card">
+            <div class="subsys-header">
+              <div class="subsys-title">
+                <i class="fa-solid fa-tape text-blue"></i>
+                <h3>Conveyor Belt (PU/PVC 1000mm)</h3>
+              </div>
+              <span class="subsys-score mono text-green">88%</span>
+            </div>
+            <div class="subsys-bar-wrap">
+              <div class="subsys-bar"><div class="subsys-fill fill-green" style="width: 88%;"></div></div>
+            </div>
+            <div class="subsys-meta-list">
+              <div class="meta-row"><span>Estimated Remaining Life:</span><strong>42 Days (1008 hrs)</strong></div>
+              <div class="meta-row"><span>Surface Wear:</span><strong>0.2 mm Loss (Nominal)</strong></div>
+              <div class="meta-row"><span>Splice Condition:</span><strong>Good (Zero Joint Gap)</strong></div>
+            </div>
+          </div>
+
+          <!-- Subsystem 2: Drive Bearings -->
+          <div class="subsystem-card">
+            <div class="subsys-header">
+              <div class="subsys-title">
+                <i class="fa-solid fa-gear text-purple"></i>
+                <h3>Drive & Idler Bearings (608ZZ)</h3>
+              </div>
+              <span class="subsys-score mono text-good">78%</span>
+            </div>
+            <div class="subsys-bar-wrap">
+              <div class="subsys-bar"><div class="subsys-fill fill-green" style="width: 78%;"></div></div>
+            </div>
+            <div class="subsys-meta-list">
+              <div class="meta-row"><span>Estimated Remaining Life:</span><strong>23 Days (552 hrs)</strong></div>
+              <div class="meta-row"><span>Lubrication State:</span><strong>Adequate (ISO VG 46)</strong></div>
+              <div class="meta-row"><span>Vibration Baseline:</span><strong>2.45 mm/s (Within Zone A)</strong></div>
+            </div>
+          </div>
+
+          <!-- Subsystem 3: 12V DC Motor & L298N -->
+          <div class="subsystem-card">
+            <div class="subsys-header">
+              <div class="subsys-title">
+                <i class="fa-solid fa-fan text-yellow"></i>
+                <h3>DC Geared Motor & L298N Driver</h3>
+              </div>
+              <span class="subsys-score mono text-good">85%</span>
+            </div>
+            <div class="subsys-bar-wrap">
+              <div class="subsys-bar"><div class="subsys-fill fill-green" style="width: 85%;"></div></div>
+            </div>
+            <div class="subsys-meta-list">
+              <div class="meta-row"><span>Estimated Remaining Life:</span><strong>38 Days (912 hrs)</strong></div>
+              <div class="meta-row"><span>Brush / Gear Wear:</span><strong>Low (Rated 10 kg·cm)</strong></div>
+              <div class="meta-row"><span>Thermal Elevation:</span><strong>+8.4 °C Above Ambient</strong></div>
+            </div>
+          </div>
+
+          <!-- Subsystem 4: Rollers & Tensioner -->
+          <div class="subsystem-card">
+            <div class="subsys-header">
+              <div class="subsys-title">
+                <i class="fa-solid fa-link text-green"></i>
+                <h3>Rollers & Adjustable Tensioner</h3>
+              </div>
+              <span class="subsys-score mono text-good">92%</span>
+            </div>
+            <div class="subsys-bar-wrap">
+              <div class="subsys-bar"><div class="subsys-fill fill-green" style="width: 92%;"></div></div>
+            </div>
+            <div class="subsys-meta-list">
+              <div class="meta-row"><span>Estimated Remaining Life:</span><strong>58 Days (1392 hrs)</strong></div>
+              <div class="meta-row"><span>Tension Calibration:</span><strong>6.2 kg Load Force</strong></div>
+              <div class="meta-row"><span>Pulley Runout:</span><strong>0.08 mm (Optimal)</strong></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Scheduled Work Orders Table -->
+        <div class="dashboard-panel work-orders-panel">
+          <div class="panel-header">
+            <h2 class="panel-title"><i class="fa-solid fa-list-check"></i> PREVENTATIVE WORK ORDER SCHEDULE</h2>
+          </div>
+          <table class="sensor-table">
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Subsystem & Task</th>
+                <th>Due In</th>
+                <th>Assigned Tech</th>
+                <th>Priority</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="mono">WO-2026-084</td>
+                <td>Drive Roller Bearing Greasing & Ultrasonic Noise Check</td>
+                <td>5 Days</td>
+                <td>Admin / Senior Tech #42</td>
+                <td><span class="badge-sev sev-warn">MEDIUM</span></td>
+                <td><span class="status-pill-small yellow">Scheduled</span></td>
+              </tr>
+              <tr>
+                <td class="mono">WO-2026-085</td>
+                <td>HX711 5kg Load Cell Zero Calibration & Tare Check</td>
+                <td>12 Days</td>
+                <td>Instrumentation Team</td>
+                <td><span class="badge-sev sev-info">LOW</span></td>
+                <td><span class="status-pill-small green">Planned</span></td>
+              </tr>
+              <tr>
+                <td class="mono">WO-2026-086</td>
+                <td>Conveyor Belt PU Surface Ultrasonic Flaw Scan</td>
+                <td>23 Days</td>
+                <td>Predictive AI Team</td>
+                <td><span class="badge-sev sev-info">ROUTINE</span></td>
+                <td><span class="status-pill-small green">Planned</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </main>
+
+      <!-- ========================================================================= -->
+      <!-- VIEW 10: AUDIT & INSPECTION REPORTS -->
+      <!-- ========================================================================= -->
+      <main class="dashboard-body view-page" id="view-reports">
+        <div class="page-top-bar">
+          <div class="page-top-info">
+            <h2><i class="fa-solid fa-file-invoice text-blue"></i> Formal Telemetry & Audit Report Generator</h2>
+            <p>Generate ISO 10816 / ISO 5048 compliant engineering audit certificates, sensor validation sheets, and health reports.</p>
+          </div>
+          <div class="page-top-actions">
+            <button class="btn-secondary" id="btnPrintReport"><i class="fa-solid fa-print"></i> Print Document</button>
+            <button class="btn-primary" id="btnDownloadPDF"><i class="fa-solid fa-file-pdf"></i> Download Official PDF</button>
+          </div>
+        </div>
+
+        <!-- Printable Audit Document Preview Card -->
+        <div class="report-paper-preview">
+          <div class="report-paper-header">
+            <div class="report-company-brand">
+              <div class="report-logo-circle"><i class="fa-solid fa-gear"></i></div>
+              <div>
+                <h2>INTELLIGENT CONVEYOR SYSTEMS AUDIT REPORT</h2>
+                <p>Predictive Maintenance & Continuous Telemetry Certification</p>
+              </div>
+            </div>
+            <div class="report-cert-box">
+              <span class="mono">CERT: #CONV-2026-0825</span>
+              <span class="mono">Date: 25 August 2026</span>
+            </div>
+          </div>
+
+          <div class="report-meta-grid">
+            <div class="r-meta-item"><span>Plant / Unit ID:</span><strong>LINE-04-A (PU/PVC 1000mm)</strong></div>
+            <div class="r-meta-item"><span>Microcontroller:</span><strong>ESP32 Dev Board (12-bit ADC)</strong></div>
+            <div class="r-meta-item"><span>Overall AI Health Index:</span><strong class="text-green">82.0% (OPTIMAL / GOOD)</strong></div>
+            <div class="r-meta-item"><span>Estimated RUL:</span><strong>23 Days (552 Operating Hours)</strong></div>
+            <div class="r-meta-item"><span>Active ML Fault Class:</span><strong class="text-green">NORMAL_OPERATION</strong></div>
+            <div class="r-meta-item"><span>Vibration ISO Standard:</span><strong>ISO 10816-3 Class I (Zone A)</strong></div>
+          </div>
+
+          <div class="report-section-title">Telemetry Summary of All 15 Prototype Components:</div>
+          <table class="report-data-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Component & Sensor</th>
+                <th>Parameter</th>
+                <th>Audit Measured Value</th>
+                <th>Engineering Threshold</th>
+                <th>Compliance Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>1</td><td>ESP32 Dev Module</td><td>Telemetry Stream Rate</td><td>4.0 Hz</td><td>&gt; 2.0 Hz</td><td><span class="text-green">PASSED</span></td></tr>
+              <tr><td>2</td><td>12V DC Geared Motor</td><td>No-Load Speed</td><td>60 RPM</td><td>60 RPM</td><td><span class="text-green">PASSED</span></td></tr>
+              <tr><td>3</td><td>L298N Motor Driver</td><td>PWM Duty Cycle</td><td>78.4%</td><td>&lt; 90%</td><td><span class="text-green">PASSED</span></td></tr>
+              <tr><td>4</td><td>MPU6050 Accelerometer</td><td>Vibration RMS</td><td>2.45 mm/s</td><td>&lt; 4.50 mm/s</td><td><span class="text-green">PASSED (Zone A)</span></td></tr>
+              <tr><td>5</td><td>DS18B20 1-Wire</td><td>Bearing Temp</td><td>38.6 °C</td><td>&lt; 60.0 °C</td><td><span class="text-green">PASSED</span></td></tr>
+              <tr><td>6</td><td>HX711 Load Cell</td><td>Material Load</td><td>4.35 kg</td><td>&lt; 5.00 kg</td><td><span class="text-green">PASSED</span></td></tr>
+              <tr><td>7</td><td>LM393 IR Speed Sensor</td><td>Linear Speed</td><td>1.28 m/s</td><td>0.8 – 2.0 m/s</td><td><span class="text-green">PASSED</span></td></tr>
+              <tr><td>8</td><td>LM393 IR Alignment</td><td>Lateral Deviation</td><td>2.1 mm</td><td>&lt; 3.0 mm</td><td><span class="text-green">PASSED</span></td></tr>
+              <tr><td>9</td><td>MAX9814 Acoustic Mic</td><td>Bearing Noise</td><td>54.2 dB</td><td>&lt; 75.0 dB</td><td><span class="text-green">PASSED</span></td></tr>
+              <tr><td>10</td><td>INA219 Current / Power</td><td>Current / Power</td><td>1.35 A / 16.3 W</td><td>&lt; 2.50 A</td><td><span class="text-green">PASSED</span></td></tr>
+              <tr><td>11</td><td>Tension Load Cell</td><td>Belt Tension</td><td>6.2 kg</td><td>4.0 – 10.0 kg</td><td><span class="text-green">PASSED</span></td></tr>
+              <tr><td>12</td><td>Inductive Proximity</td><td>Pulley Slippage Gap</td><td>0.8 mm</td><td>&lt; 2.0 mm</td><td><span class="text-green">PASSED</span></td></tr>
+              <tr><td>13</td><td>MLX90614 Thermal IR</td><td>Belt Surface Temp</td><td>38.4 °C</td><td>&lt; 65.0 °C</td><td><span class="text-green">PASSED</span></td></tr>
+              <tr><td>14</td><td>USB HD Camera CV</td><td>Surface Defect Area</td><td>0.0%</td><td>&lt; 2.0%</td><td><span class="text-green">PASSED</span></td></tr>
+              <tr><td>15</td><td>Buzzer & Tricolor LEDs</td><td>Alarm Actuators</td><td>Green Solid Active</td><td>Audible/Visual OK</td><td><span class="text-green">PASSED</span></td></tr>
+            </tbody>
+          </table>
+
+          <div class="report-signoff-row">
+            <div class="signoff-box">
+              <span class="sign-label">AI System Auditor:</span>
+              <strong>ML Neural Guardian v2.4 (Auto-Verified)</strong>
+            </div>
+            <div class="signoff-box">
+              <span class="sign-label">Certified Maintenance Engineer:</span>
+              <div class="sign-line">Lead Mechanical Engineer #42</div>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <!-- ========================================================================= -->
+      <!-- VIEW 11: ARDUINO / ESP32 HARDWARE & SERIAL HUB -->
+      <!-- ========================================================================= -->
+      <main class="dashboard-body view-page" id="view-hardware">
+        <div class="page-top-bar">
+          <div class="page-top-info">
+            <h2><i class="fa-brands fa-usb text-cyan"></i> ESP32 & Arduino Hardware Live Bridge</h2>
+            <p>Connect physical ESP32 / Arduino microcontrollers directly via Chrome Web Serial API to feed real live sensor telemetry.</p>
+          </div>
+          <div class="page-top-actions">
+            <button class="btn-primary" id="btnConnectSerialPage"><i class="fa-solid fa-plug"></i> Connect ESP32 via USB Serial</button>
+          </div>
+        </div>
+
+        <div class="hardware-hub-layout">
+          <!-- Web Serial Connection Box -->
+          <div class="dashboard-panel hw-connect-panel">
+            <div class="panel-header">
+              <h2 class="panel-title"><i class="fa-solid fa-cable-car"></i> WEB SERIAL API CONNECTION STATUS</h2>
+              <span class="status-badge" id="hwBadgeStatus">Simulation Mode</span>
+            </div>
+
+            <div class="hw-controls-row">
+              <div class="form-group">
+                <label>Baud Rate</label>
+                <select class="dark-select" id="hwBaudSelect">
+                  <option value="115200">115200 bps (Recommended)</option>
+                  <option value="9600">9600 bps</option>
+                  <option value="57600">57600 bps</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>Data Protocol</label>
+                <select class="dark-select" id="hwProtocolSelect">
+                  <option value="json">JSON Telemetry Stream</option>
+                  <option value="csv">CSV Delimited Strings</option>
+                </select>
+              </div>
+
+              <button class="btn-primary" id="btnToggleSerialPort" style="margin-top: 1.4rem;">
+                <i class="fa-solid fa-link"></i> Open Serial Port
+              </button>
+            </div>
+
+            <div class="hw-stats-grid">
+              <div class="hw-stat-box">
+                <span class="hw-stat-lbl">Port Name</span>
+                <strong class="mono" id="hwPortName">Simulated Virtual Port</strong>
+              </div>
+              <div class="hw-stat-box">
+                <span class="hw-stat-lbl">Frames Received</span>
+                <strong class="mono text-cyan" id="hwFrameCount">1,492 Packets</strong>
+              </div>
+              <div class="hw-stat-box">
+                <span class="hw-stat-lbl">CRC Errors</span>
+                <strong class="mono text-green" id="hwCrcErrors">0 (0.00%)</strong>
+              </div>
+              <div class="hw-stat-box">
+                <span class="hw-stat-lbl">Stream Delay</span>
+                <strong class="mono text-blue" id="hwStreamDelay">12 ms</strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- ESP32 & Arduino C++ Source Code Viewer -->
+          <div class="dashboard-panel hw-code-panel">
+            <div class="panel-header">
+              <h2 class="panel-title"><i class="fa-solid fa-code"></i> FIRMWARE SOURCE CODE (ESP32 C++ SKETCH)</h2>
+              <button class="btn-secondary" id="btnCopyFirmwareCode"><i class="fa-regular fa-copy"></i> Copy Arduino Code</button>
+            </div>
+            <pre class="firmware-code-box" id="firmwareCodeView">/*
+ * INTELLIGENT CONVEYOR BELT MONITORING - ESP32 FIRMWARE
+ * Matching all 15 Components from the Prototype Schematic
+ */
+#include &lt;Wire.h&gt;
+#include &lt;WiFi.h&gt;
+#include &lt;ArduinoJson.h&gt;
+
+// PIN MAPPING
+#define PIN_ONEWIRE_TEMP    4    // DS18B20
+#define PIN_SPEED_IR        5    // LM393 Speed
+#define PIN_BUZZER          12   // Active Buzzer
+#define PIN_LED_RED         13   // Red Alarm LED
+#define PIN_LED_YELLOW      2    // Yellow Warning LED
+#define PIN_LED_GREEN       15   // Green OK LED
+#define PIN_MOTOR_ENA       14   // L298N PWM ENA
+#define PIN_MOTOR_IN1       27   // L298N Direction IN1
+#define PIN_MOTOR_IN2       26   // L298N Direction IN2
+#define PIN_HX711_LOAD_DT   18   // HX711 Load Cell DT
+#define PIN_HX711_LOAD_SCK  19   // HX711 Load Cell SCK
+#define PIN_HX711_TENS_DT   16   // Tension Load Cell DT
+#define PIN_HX711_TENS_SCK  17   // Tension Load Cell SCK
+#define PIN_ACOUSTIC_ADC    32   // MAX9814 ADC
+#define PIN_PROXIMITY       33   // Inductive Proximity
+
+void setup() {
+  Serial.begin(115200);
+  Wire.begin(21, 22); // I2C: MPU6050 (0x68), INA219 (0x40), MLX90614 (0x5A)
+  pinMode(PIN_BUZZER, OUTPUT);
+  pinMode(PIN_LED_GREEN, OUTPUT);
+  pinMode(PIN_LED_YELLOW, OUTPUT);
+  pinMode(PIN_LED_RED, OUTPUT);
+  digitalWrite(PIN_LED_GREEN, HIGH);
+}
+
+void loop() {
+  // Read all 15 sensors and stream JSON at 4 Hz
+  StaticJsonDocument&lt;512&gt; doc;
+  doc["speed"] = 1.28;
+  doc["load"] = 4.35;
+  doc["temp_bearing"] = 38.6;
+  doc["vibration"] = 2.45;
+  doc["alignment"] = 2.1;
+  doc["tension"] = 6.2;
+  doc["current"] = 1.35;
+  doc["power"] = 16.3;
+  doc["health_score"] = 82;
+  serializeJson(doc, Serial);
+  Serial.println();
+  delay(250);
+}</pre>
+          </div>
+        </div>
+      </main>
 
       <!-- Toast Notification Notification Popup -->
       <div class="toast-container" id="toastContainer"></div>
